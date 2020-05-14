@@ -12,76 +12,79 @@ const LoginPage = () => {
         <div>
         <NavLink to='/forum/Registration'> Registration page</NavLink>
         <Formik
-        initialValues={{
-          email: '',
-          password: '',
-        }}
+        initialValues={{ email: "1", password: "" }}
         onSubmit={async values => {
           await new Promise(resolve => setTimeout(resolve, 500));
+          alert(JSON.stringify(values, null, 2));
           loginData({
-            email: values.email,
-            password: values.password,
-          }).then(response => setreqData(response));
+              email: values.email,
+              password: values.password,
+          }).then(response => setreqData(response.data))
         }}
-        validationSchema={Yup.object().shape({
-          email: Yup.string()
-            .email()
-            .required('Поле обязательно'),
-          password: Yup.string()
-            .required('Поле обязательно')
-            .min(8, 'Password is too short - should be 8 chars minimum.')
-            .max(40, 'Password is too long - should be 40 chars maximum.')
-            .matches(
-              /(?=.*[a-z])(?=.*[A-Z])(?=.*?[0-9])/,
-              'Исплользуй 1 цифру 1 заглавную и одну строчную букву',
-            )
-        })}
       >
         {props => {
           const {
             values,
             touched,
             errors,
+            dirty,
             isSubmitting,
             handleChange,
             handleBlur,
             handleSubmit,
-            handleReset,
+            handleReset
           } = props;
           return (
             <form onSubmit={handleSubmit}>
-                <h3>Login Form</h3>
-
-              <span>email</span>
-              <Input
+              <label htmlFor="email" style={{ display: "block" }}>
+                Email
+            </label>
+              <input
                 id="email"
                 placeholder="Enter your email"
                 type="text"
                 value={values.email}
                 onChange={handleChange}
                 onBlur={handleBlur}
+                className={
+                  errors.email && touched.email
+                    ? "text-input error"
+                    : "text-input"
+                }
               />
               {errors.email && touched.email && (
-                <div>{errors.email}</div>
+                <div className="input-feedback">{errors.email}</div>
               )}
-              <span>Password</span>
-              <Input
+              <label htmlFor="email" style={{ display: "block" }}>
+                password
+            </label>
+              <input
                 id="password"
-                placeholder="Enter password"
+                placeholder="Enter your name"
                 type="password"
-                value={values.password}
+                value={values.email2}
                 onChange={handleChange}
                 onBlur={handleBlur}
+                className={
+                  errors.email2 && touched.email2
+                    ? "text-input error"
+                    : "text-input"
+                }
               />
-              {errors.password && touched.password && (
-                <div>{errors.password}</div>
+              {errors.email2 && touched.email2 && (
+                <div className="input-feedback">{errors.email2}</div>
               )}
-                <button type="submit" disabled={isSubmitting}>
-                  <NavLink to='/forum/'> Submit</NavLink>
-                </button>
-                <Button type="reset" onClick={handleReset}>
-                  Reset
-                </Button>
+              <button
+                type="button"
+                className="outline"
+                onClick={handleReset}
+                disabled={!dirty || isSubmitting}
+              >
+                Reset
+            </button>
+              <button type="submit" disabled={isSubmitting}>
+                Submit
+            </button>
             </form>
           );
         }}

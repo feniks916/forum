@@ -1,112 +1,117 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { Formik } from 'formik';
-import {Input, Button} from 'antd';
+import { Input, Button } from 'antd';
 import * as Yup from 'yup';
-import {postData} from '../../API/API';
+import { postData } from '../../API/API';
 
 const RegistrationPage = props => {
   const [reqData, setreqData] = useState('');
   console.log(reqData)
-return (
-  <div>
-    <NavLink to='/forum/LoginPage'> Login page</NavLink>
-    <Formik
-        initialValues={{
-          email: '',
-          name: '',
-          age: '',
-          password: '',
-          repeatPassword: '',
-          acceptTerms: false,
-          skills: [{ id: 0, value: '' }],
-        }}
-        onSubmit={ values => {
-          console.log('hello')
+  return (
+    <div>
+      <NavLink to='/forum/LoginPage'> Login page</NavLink>
+      <Formik
+        initialValues={{ email: "1", name: "2", password: ""}}
+        onSubmit={async values => {
+          await new Promise(resolve => setTimeout(resolve, 500));
+          alert(JSON.stringify(values, null, 2));
           postData({
+            user: {
             email: values.email,
-            name: values.name,
             password: values.password,
-          }).then(response => setreqData(response.data));
-          
+            name: values.name,
+        }}).then(response => setreqData(response.data))
         }}
-        validationSchema={Yup.object().shape({
-          email: Yup.string()
-            .email()
-            .required('Поле обязательно'),
-          name: Yup.string().required('Поле обязательно'),
-          age: Yup.number().required('Поле обязательно'),
-          password: Yup.string()
-            .required('Поле обязательно')
-            .min(8, 'Password is too short - should be 8 chars minimum.')
-            .max(40, 'Password is too long - should be 40 chars maximum.')
-            .matches(
-              /(?=.*[a-z])(?=.*[A-Z])(?=.*?[0-9])/,
-              'Исплользуй 1 цифру 1 заглавную и одну строчную букву',
-            ),
-          repeatPassword: Yup.string().oneOf([Yup.ref('password'), null], 'Пароли не совпадают'),
-          acceptTerms: Yup.bool().oneOf([true], 'Accept Terms & Conditions is required'),
-        })}
       >
         {props => {
           const {
             values,
             touched,
             errors,
+            dirty,
             isSubmitting,
             handleChange,
             handleBlur,
             handleSubmit,
-            handleReset,
+            handleReset
           } = props;
           return (
             <form onSubmit={handleSubmit}>
-                <h3>Registration Form</h3>
-              <span>name</span>
-              <Input
-                id="name"
-                placeholder="Enter your name"
-                type="text"
-                value={values.name}
-                onChange={handleChange}
-                onBlur={handleBlur}
-              />
-              {errors.name && touched.name && <div >{errors.name}</div>}
-              <span>email</span>
-              <Input
+              <label htmlFor="email" style={{ display: "block" }}>
+                Email
+            </label>
+              <input
                 id="email"
                 placeholder="Enter your email"
                 type="text"
                 value={values.email}
                 onChange={handleChange}
                 onBlur={handleBlur}
+                className={
+                  errors.email && touched.email
+                    ? "text-input error"
+                    : "text-input"
+                }
               />
               {errors.email && touched.email && (
-                <div>{errors.email}</div>
+                <div className="input-feedback">{errors.email}</div>
               )}
-              <span>Password</span>
-              <Input
-                id="password"
-                placeholder="Enter password"
-                type="password"
-                value={values.password}
+              <label htmlFor="email" style={{ display: "block" }}>
+                Name
+            </label>
+              <input
+                id="name"
+                placeholder="Enter your name"
+                type="text"
+                value={values.email2}
                 onChange={handleChange}
                 onBlur={handleBlur}
+                className={
+                  errors.email2 && touched.email2
+                    ? "text-input error"
+                    : "text-input"
+                }
               />
-              {errors.password && touched.password && (
-                <div>{errors.password}</div>
+              {errors.email2 && touched.email2 && (
+                <div className="input-feedback">{errors.email2}</div>
               )}
-                <button type="submit" disabled={isSubmitting}>
+              <label htmlFor="email" style={{ display: "block" }}>
+                Password
+            </label>
+              <input
+                id="password"
+                placeholder="Enter your name"
+                type="text"
+                value={values.email2}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                className={
+                  errors.email2 && touched.email2
+                    ? "text-input error"
+                    : "text-input"
+                }
+              />
+              {errors.email2 && touched.email2 && (
+                <div className="input-feedback">{errors.email2}</div>
+              )}
+
+              <button
+                type="button"
+                className="outline"
+                onClick={handleReset}
+                disabled={!dirty || isSubmitting}
+              >
+                Reset
+            </button>
+              <button type="submit" disabled={isSubmitting}>
                 Submit
-                </button>
-                <Button type="reset" onClick={handleReset}>
-                  Reset
-                </Button>
+            </button>
             </form>
           );
         }}
       </Formik>
-  </div>
-)
+    </div>
+  )
 }
 export default RegistrationPage;

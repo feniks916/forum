@@ -10,7 +10,7 @@ const instance = axios.create({
 
 
 export const postData = data =>
-  instance.post('/api/users', data).then(response => console.log(response.data));
+instance.request({ method: 'post', url: '/api/users', data })
 
 
 export const loginData = (data) => 
