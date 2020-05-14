@@ -1,47 +1,18 @@
-/* eslint-disable comma-dangle */
-/* eslint-disable arrow-body-style */
-/* eslint-disable react/no-array-index-key */
-
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import './App.module.scss';
-import axios from 'axios';
-import AviaSales from './Aviasales';
+import Registration from './Components/RegistrationPage/Registration';
+import LoginPage from './Components/LoginPage/loginPage';
+import MainPage from './Components/MainPage/MainPage'
+import {BrowserRouter, Route} from 'react-router-dom';
 
 const App = () => {
-  const [searchId, setSearchId] = useState('');
-  const [stop, setStop] = useState(false);
-  const [mainTickets, setMainTickets] = useState([]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const result = await axios('https://front-test.beta.aviasales.ru/search');
-      setSearchId(result.data.searchId);
-    };
-    fetchData();
-  }, []);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      if (searchId !== '') {
-        try {
-          const result = await axios(
-            `https://front-test.beta.aviasales.ru/tickets?searchId=${searchId}`
-          );
-          setStop(result.data.stop);
-          setMainTickets(mainTickets.concat(result.data.tickets));
-        } catch (error) {
-          if (error.message === 'Request failed with status code 500') {
-            fetchData();
-          }
-        }
-      }
-    };
-    if (stop === false) {
-      fetchData();
-    }
-  }, [searchId, stop, mainTickets]);
-
-  return <AviaSales ticketsList={mainTickets} stop={stop}/>;
+  return (
+    <BrowserRouter>
+      <Route path='/forum/LoginPage' component={LoginPage} />
+      <Route path='/forum/Registration' component={Registration}/>
+      <Route exact path='/forum/' component={MainPage} />
+    </BrowserRouter>
+  ) 
 };
 
 export default App;
