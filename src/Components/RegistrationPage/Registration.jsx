@@ -1,27 +1,27 @@
 import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { Formik } from 'formik';
-import { Input, Button } from 'antd';
-import * as Yup from 'yup';
+import { Input } from 'antd';
 import { postData } from '../../API/API';
 
 const RegistrationPage = props => {
-  const [reqData, setreqData] = useState('');
+  const [reqData, setreqData] = useState([]);
   console.log(reqData)
   return (
     <div>
       <NavLink to='/forum/LoginPage'> Login page</NavLink>
       <Formik
-        initialValues={{ email: "1", name: "2", password: ""}}
+        initialValues={{ email: "1@mail.ru", name: "2", password: "" }}
         onSubmit={async values => {
           await new Promise(resolve => setTimeout(resolve, 500));
-          alert(JSON.stringify(values, null, 2));
           postData({
             user: {
-            email: values.email,
-            password: values.password,
-            name: values.name,
-        }}).then(response => setreqData(response.data))
+              email: values.email,
+              password: values.password,
+              username: values.name,
+            }
+          }).then(response => setreqData(response.status))
+            .catch(error => setreqData(error.response.data.errors))
         }}
       >
         {props => {
@@ -41,7 +41,7 @@ const RegistrationPage = props => {
               <label htmlFor="email" style={{ display: "block" }}>
                 Email
             </label>
-              <input
+              <Input
                 id="email"
                 placeholder="Enter your email"
                 type="text"
@@ -57,10 +57,13 @@ const RegistrationPage = props => {
               {errors.email && touched.email && (
                 <div className="input-feedback">{errors.email}</div>
               )}
+              {reqData.email !== undefined && (
+                <div>{`Email ${String(reqData.email)}`}</div>
+              )}
               <label htmlFor="email" style={{ display: "block" }}>
                 Name
             </label>
-              <input
+              <Input
                 id="name"
                 placeholder="Enter your name"
                 type="text"
@@ -76,10 +79,13 @@ const RegistrationPage = props => {
               {errors.email2 && touched.email2 && (
                 <div className="input-feedback">{errors.email2}</div>
               )}
+              {reqData.username !== undefined && (
+                <div>{`Name ${String(reqData.username)}`}</div>
+              )}
               <label htmlFor="email" style={{ display: "block" }}>
                 Password
             </label>
-              <input
+              <Input
                 id="password"
                 placeholder="Enter your name"
                 type="text"
@@ -95,7 +101,9 @@ const RegistrationPage = props => {
               {errors.email2 && touched.email2 && (
                 <div className="input-feedback">{errors.email2}</div>
               )}
-
+              {reqData.password !== undefined && (
+                <div>{`Password ${String(reqData.password)}`}</div>
+              )}
               <button
                 type="button"
                 className="outline"
