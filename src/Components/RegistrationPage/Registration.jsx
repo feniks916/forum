@@ -9,7 +9,6 @@ const RegistrationPage = props => {
  const [reqData, setreqData] = useState('');
  console.log(reqData.data)
   const registrationToken = (reqData) => {
-    debugger
     props.setTokenAC(reqData);
 }
 if( reqData.status === 200 ) {

@@ -9,7 +9,6 @@ let initialState = {
 }
 
 const mainReducer = (state = initialState, action) => {
-    debugger
     switch (action.type) {
         case SET_NAME:
             return {
