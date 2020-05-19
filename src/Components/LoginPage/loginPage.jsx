@@ -3,10 +3,19 @@ import { NavLink } from 'react-router-dom';
 import { Formik } from 'formik';
 import { Input } from 'antd';
 import { loginData } from '../../API/API';
+import {Redirect} from "react-router-dom";
 
-const LoginPage = () => {
+const LoginPage = (props) => {
     const [reqData, setreqData] = useState('');
-    console.log(reqData)
+    const takeToken = (reqData) => {
+        props.setTokenAC(reqData);
+    }
+    if( reqData instanceof Object ) {
+        takeToken(reqData.data)
+    }
+    if(reqData.status === 200) {
+        return <Redirect to={"/forum"} /> ;
+    }
     return (
         <div>
             <NavLink to='/forum/Registration'> Registration page</NavLink>
@@ -19,7 +28,7 @@ const LoginPage = () => {
                             email: values.email,
                             password: values.password,
                         }
-                    }).then(response => setreqData(response.status))
+                    }).then(response => setreqData(response))
                         .catch(error => setreqData(error.response.data.errors['email or password']))
                 }}
             >

@@ -11,3 +11,11 @@ instance.post('/api/users', data)
 
 export const loginData = (data) => 
   instance.post('/api/users/login', data)
+
+export const authData = (data) => 
+  instance.get('/api/user', {
+    withCredentials: true,
+    headers: {
+      Authorization: data
+    }
+  })

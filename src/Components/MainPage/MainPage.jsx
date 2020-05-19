@@ -1,12 +1,25 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import {Redirect} from "react-router-dom";
 
-const LoginPage = () => {
+const mainPage = (props) => {
+  console.log(props)
+  if(props.token.length === 0)
+  {
+    return <Redirect to={"/forum/LoginPage"} /> ;
+  }
+  const deleteToken = () => {
+    return props.setTokenAC({
+      user: {
+        token: ''
+      }
+    });
+  }
     return (
         <div>
-          <button> <NavLink to='/forum/LoginPage'> Выйти</NavLink> </button> 
+          
+          <button onClick={() => deleteToken()}> Выйти </button> 
         </div>
     )
 }
 
-export default LoginPage;
+export default mainPage;
