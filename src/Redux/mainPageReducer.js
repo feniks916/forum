@@ -1,4 +1,3 @@
-const SET_NAME = 'SET_NAME';
 const SET_TOKEN = 'SET_TOKEN';
 const SET_VALUE = 'SET_VALUE';
 
@@ -10,15 +9,11 @@ let initialState = {
 
 const mainReducer = (state = initialState, action) => {
     switch (action.type) {
-        case SET_NAME:
-            return {
-                ...state,
-                username: action.data.user.username
-            };
         case SET_TOKEN:
             return {
                 ...state,
-                token: action.data.user.token
+                token: action.data.user.token,
+                username: action.data.user.username
             };
         case SET_VALUE:
             return {
@@ -30,7 +25,6 @@ const mainReducer = (state = initialState, action) => {
     }
 }
 
-export const setNameAC = (data) => ({ type: SET_NAME, data: data });
 export const setTokenAC = (data) => ({ type: SET_TOKEN, data: data });
 export const setValueAC = (data) => ({ type: SET_VALUE, data: data });
 

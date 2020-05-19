@@ -1,7 +1,7 @@
 import * as axios from 'axios';
 
 const instance = axios.create({
-  baseURL: 'http://conduit.productionready.io',
+  baseURL: 'https://conduit.productionready.io',
 });
 
 

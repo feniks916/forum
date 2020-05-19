@@ -7,7 +7,6 @@ import {Redirect} from "react-router-dom";
 
 const RegistrationPage = props => {
  const [reqData, setreqData] = useState('');
- console.log(reqData.data)
   const registrationToken = (reqData) => {
     props.setTokenAC(reqData);
 }

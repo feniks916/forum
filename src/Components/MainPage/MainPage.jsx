@@ -10,13 +10,14 @@ const mainPage = (props) => {
   const deleteToken = () => {
     return props.setTokenAC({
       user: {
-        token: ''
+        token: '',
+        username: '',
       }
     });
   }
     return (
         <div>
-          
+          <h3>{props.username} </h3>
           <button onClick={() => deleteToken()}> Выйти </button> 
         </div>
     )
