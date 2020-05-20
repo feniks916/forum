@@ -1,42 +1,32 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { Formik } from 'formik';
 import { Input } from 'antd';
-import { loginData } from '../../API/API';
-import {Redirect} from "react-router-dom";
+import { Redirect } from "react-router-dom";
+import cls from './login.module.scss'
 
 const LoginPage = (props) => {
-    const [reqData, setreqData] = useState('');
-    const takeToken = (reqData) => {
-        props.setTokenAC(reqData);
+    const { status, error, thunkCreator } = props;
+    if (status === 200) {
+        return <Redirect to={"/forum"} />
     }
-    if( reqData instanceof Object ) {
-        takeToken(reqData.data)
-    }
-    if(reqData.status === 200) {
-        return <Redirect to={"/forum"} /> ;
-    }
+
     return (
-        <div>
+        <div className={cls.wrapper}>
             <NavLink to='/forum/Registration'> Registration page</NavLink>
             <Formik
-                initialValues={{ email: "1", password: "" }}
+                initialValues={{ email: "", password: "" }}
                 onSubmit={async values => {
                     await new Promise(resolve => setTimeout(resolve, 500));
-                    loginData({
-                        user: {
-                            email: values.email,
-                            password: values.password,
-                        }
-                    }).then(response => setreqData(response))
-                        .catch(error => setreqData(error.response.data.errors['email or password']))
+                    thunkCreator({
+                        email: values.email,
+                        password: values.password
+                    })
                 }}
             >
                 {props => {
                     const {
                         values,
-                        touched,
-                        errors,
                         dirty,
                         isSubmitting,
                         handleChange,
@@ -45,10 +35,7 @@ const LoginPage = (props) => {
                         handleReset
                     } = props;
                     return (
-                        <form onSubmit={handleSubmit}>
-                            {reqData === 422 && <label htmlFor="email" style={{ display: "block" }}>
-                                Неверное имя пользователя или пароль
-                             </label>}
+                        <form onSubmit={handleSubmit} className={cls.form}>
                             <label htmlFor="email" style={{ display: "block" }}>
                                 Email
                              </label>
@@ -59,15 +46,8 @@ const LoginPage = (props) => {
                                 value={values.email}
                                 onChange={handleChange}
                                 onBlur={handleBlur}
-                                className={
-                                    errors.email && touched.email
-                                        ? "text-input error"
-                                        : "text-input"
-                                }
+                                className={cls.input}
                             />
-                            {errors.email && touched.email && (
-                                <div className="input-feedback">{errors.email}</div>
-                            )}
                             <label htmlFor="email" style={{ display: "block" }}>
                                 password
                                 </label>
@@ -75,20 +55,13 @@ const LoginPage = (props) => {
                                 id="password"
                                 placeholder="Enter your name"
                                 type="password"
-                                value={values.email2}
+                                value={values.password}
                                 onChange={handleChange}
                                 onBlur={handleBlur}
-                                className={
-                                    errors.email2 && touched.email2
-                                        ? "text-input error"
-                                        : "text-input"
-                                }
+                                className={cls.input}
                             />
-                            {errors.email2 && touched.email2 && (
-                                <div className="input-feedback">{errors.email2}</div>
-                            )}
-                            {reqData.length > 0 && (
-                                <div>{`Email or Password ${String(reqData)}`}</div>
+                            {error !== null && (
+                                <div>{`email or password ${error["email or password"]}`}</div>
                             )}
                             <button
                                 type="button"
@@ -98,9 +71,12 @@ const LoginPage = (props) => {
                             >
                                 Reset
                                  </button>
-                            <button type="submit" disabled={isSubmitting}>
+                            <button
+                                type="submit"
+                                disabled={isSubmitting}
+                            >
                                 Submit
-            </button>
+                            </button>
                         </form>
                     );
                 }}

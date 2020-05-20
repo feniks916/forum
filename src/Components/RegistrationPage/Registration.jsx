@@ -1,38 +1,37 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { Formik } from 'formik';
 import { Input } from 'antd';
-import { postData } from '../../API/API';
-import {Redirect} from "react-router-dom";
+import { Redirect } from "react-router-dom";
+import * as Yup from 'yup';
+import cls from './registration.module.scss';
 
 const RegistrationPage = props => {
- const [reqData, setreqData] = useState('');
-  const registrationToken = (reqData) => {
-    props.setTokenAC(reqData);
-}
-if( reqData.status === 200 ) {
-  registrationToken(reqData.data)
-}
-if(reqData.status === 200) {
-    return <Redirect to={"/forum"} /> ;
-}
+  const { status, error, RegistrationThunkCreator } = props;
+  console.log(error)
+  if (status === 200) {
+    return <Redirect to={"/forum"} />
+  }
+
   return (
-    <div>
+    <div className={cls.wrapper}>
       <NavLink to='/forum/LoginPage'> Login page</NavLink>
       <Formik
-        initialValues={{ email: "1@mail.ru", name: "2", password: "" }}
-        onSubmit={async values => {
-          await new Promise(resolve => setTimeout(resolve, 500));
-          postData({
-            user: {
-              email: values.email,
-              password: values.password,
-              username: values.name,
-            }
-          }).then(response => setreqData(response))
-            .catch(error => setreqData(error.response.data.errors))
+        initialValues={{ email: "", name: "", password: "", confirm_password: "" }}
+        onSubmit={async (values, { setSubmitting }) => {
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          setSubmitting(false);
+          RegistrationThunkCreator({
+            email: values.email,
+            password: values.password,
+            name: values.name
+          })
         }}
+        validationSchema={Yup.object().shape({
+          confirm_password: Yup.string().oneOf([Yup.ref('password'), null], 'Passwords dont match'),
+        })}
       >
+
         {props => {
           const {
             values,
@@ -46,7 +45,7 @@ if(reqData.status === 200) {
             handleReset
           } = props;
           return (
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} className={cls.form}>
               <label htmlFor="email" style={{ display: "block" }}>
                 Email
             </label>
@@ -57,17 +56,10 @@ if(reqData.status === 200) {
                 value={values.email}
                 onChange={handleChange}
                 onBlur={handleBlur}
-                className={
-                  errors.email && touched.email
-                    ? "text-input error"
-                    : "text-input"
-                }
+                className={cls.input}
               />
-              {errors.email && touched.email && (
-                <div className="input-feedback">{errors.email}</div>
-              )}
-              {reqData.email !== undefined && (
-                <div>{`Email ${String(reqData.email)}`}</div>
+              {error !== null && error.email !== undefined && (
+                <div>{`Email ${String(error.email)}`}</div>
               )}
               <label htmlFor="email" style={{ display: "block" }}>
                 Name
@@ -79,17 +71,10 @@ if(reqData.status === 200) {
                 value={values.email2}
                 onChange={handleChange}
                 onBlur={handleBlur}
-                className={
-                  errors.email2 && touched.email2
-                    ? "text-input error"
-                    : "text-input"
-                }
+                className={cls.input}
               />
-              {errors.email2 && touched.email2 && (
-                <div className="input-feedback">{errors.email2}</div>
-              )}
-              {reqData.username !== undefined && (
-                <div>{`Name ${String(reqData.username)}`}</div>
+              {error !== null && error.username !== undefined && (
+                <div>{`Name ${String(error.username)}`}</div>
               )}
               <label htmlFor="email" style={{ display: "block" }}>
                 Password
@@ -97,21 +82,29 @@ if(reqData.status === 200) {
               <Input
                 id="password"
                 placeholder="Enter your name"
-                type="text"
+                type="password"
                 value={values.email2}
                 onChange={handleChange}
                 onBlur={handleBlur}
-                className={
-                  errors.email2 && touched.email2
-                    ? "text-input error"
-                    : "text-input"
-                }
+                className={cls.input}
               />
-              {errors.email2 && touched.email2 && (
-                <div className="input-feedback">{errors.email2}</div>
+              {error !== null && error.password !== undefined && (
+                <div>{`Password ${String(error.password)}`}</div>
               )}
-              {reqData.password !== undefined && (
-                <div>{`Password ${String(reqData.password)}`}</div>
+              <label htmlFor="email" style={{ display: "block" }}>
+                Repeat Password
+            </label>
+              <Input
+                id="confirm_password"
+                placeholder="Enter your name"
+                type="password"
+                value={values.email2}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                className={cls.input}
+              />
+              {errors.confirm_password && touched.confirm_password && (
+                <div>{errors.confirm_password}</div>
               )}
               <button
                 type="button"
@@ -121,9 +114,10 @@ if(reqData.status === 200) {
               >
                 Reset
             </button>
-              <button type="submit" disabled={isSubmitting}>
+              <button
+               type="submit" disabled={isSubmitting}>
                 Submit
-            </button>
+              </button>
             </form>
           );
         }}

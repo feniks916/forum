@@ -1,7 +1,12 @@
 import { connect } from 'react-redux';
 import RegistrationPage from './Registration'
-import {setTokenAC} from '../../Redux/mainPageReducer'
+import {RegistrationThunkCreator} from '../../Redux/mainPageReducer';
 
-const RegistrationPageContainer = connect(null,{setTokenAC})(RegistrationPage)
+const mapStateToProps = (state) => ({
+    error: state.mainPage.error,
+    status: state.mainPage.status
+})
+
+const RegistrationPageContainer = connect(mapStateToProps,{RegistrationThunkCreator})(RegistrationPage)
 
 export default RegistrationPageContainer;
