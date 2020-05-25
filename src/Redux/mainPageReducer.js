@@ -49,7 +49,9 @@ export const thunkCreator = (data) => {
             }
         })
             .then(response => {
-                dispatch(setTokenAC(response))
+                console.log(response)
+                dispatch(setTokenAC(response));
+                localStorage.setItem('cool-jwt', response.data.user.token);
             })
             .catch(error => {
                 dispatch(setErrorAC(error.response.data.errors))
