@@ -22,9 +22,10 @@ const mainReducer = (state = initialState, action) => {
                 status: action.data.request.status,
             };
         case SET_VALUE:
+            
             return {
                 ...state,
-                value: action.data
+                status: action.data.data
             };
         case SET_ERROR:
             return {

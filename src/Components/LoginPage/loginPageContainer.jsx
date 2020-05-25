@@ -1,5 +1,4 @@
 import { connect } from 'react-redux';
-import {setTokenAC} from '../../Redux/mainPageReducer';
 import {thunkCreator} from '../../Redux/mainPageReducer';
 import React from 'react';
 import { NavLink } from 'react-router-dom';
@@ -93,6 +92,6 @@ const mapStateToProps = (state) => ({
     status: state.mainPage.status
 })
 
-const LoginPageContainer = connect(mapStateToProps,{setTokenAC, thunkCreator})(LoginPage)
+const LoginPageContainer = connect(mapStateToProps,{thunkCreator})(LoginPage)
 
 export default LoginPageContainer;
