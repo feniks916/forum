@@ -8,10 +8,12 @@ import { Redirect } from "react-router-dom";
 import * as Yup from 'yup';
 import cls from './registration.module.scss';
 
-
 const RegistrationPage = props => {
     const { status, error, RegistrationThunkCreator } = props;
-  
+    console.log(error)
+    if (status === 200) {
+      return <Redirect to={"/forum"} />
+    }
     return (
       <div className={cls.wrapper}>
         <NavLink to='/forum/LoginPage'> Login page</NavLink>

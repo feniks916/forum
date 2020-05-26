@@ -2,6 +2,10 @@ export const getJwt = () => {
     return localStorage.getItem('cool-jwt');
   };
 
+  export const getName = () => {
+    return localStorage.getItem('cool-name');
+  }
+
   export const isAuth = () => {
     return localStorage.getItem('cool-jwt') !== null;
   };
