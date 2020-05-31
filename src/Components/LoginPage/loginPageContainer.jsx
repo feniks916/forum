@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import {thunkCreator} from '../../Redux/mainPageReducer';
+import { thunk } from '../../Redux/mainPageReducer';
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { Formik } from 'formik';
@@ -8,19 +8,18 @@ import { Redirect } from "react-router-dom";
 import cls from './login.module.scss';
 
 const LoginPage = (props) => {
-    const { status, error, thunkCreator } = props;
-    if (status === 200) {
+    const { status, error, thunk } = props;
+    if (status < 300 && status > 199) {
         return <Redirect to={"/forum"} />
     }
 
     return (
         <div className={cls.wrapper}>
-            <NavLink to='/forum/Registration'> Registration page</NavLink>
             <Formik
                 initialValues={{ email: "", password: "" }}
                 onSubmit={async values => {
                     await new Promise(resolve => setTimeout(resolve, 500));
-                    thunkCreator({
+                    thunk({
                         email: values.email,
                         password: values.password
                     })
@@ -62,23 +61,26 @@ const LoginPage = (props) => {
                                 onBlur={handleBlur}
                                 className={cls.input}
                             />
-                            {error !== null && (
-                                <div>{`email or password ${error["email or password"]}`}</div>
+                            {error !== null && error !== 'undefined' && (
+                                <div className={cls.errors}><p>{`email or password ${error["email or password"]}`}</p></div>
                             )}
-                            <button
-                                type="button"
-                                className="outline"
-                                onClick={handleReset}
-                                disabled={!dirty || isSubmitting}
-                            >
-                                Reset
-                                 </button>
-                            <button
-                                type="submit"
-                                disabled={isSubmitting}
-                            >
-                                Submit
-                            </button>
+                            <div className={cls.buttonsArea}>
+                                <NavLink to='/forum/Registration'>Register</NavLink>
+                                <div>
+                                    <button
+                                        type="button"
+                                        className="outline"
+                                        onClick={handleReset}
+                                        disabled={!dirty || isSubmitting}
+                                    >
+                                        Reset
+                                    </button>
+                                    <button
+                                        type="submit" disabled={isSubmitting}>
+                                        Submit
+                                    </button>
+                                </div>
+                            </div>
                         </form>
                     );
                 }}
@@ -88,10 +90,10 @@ const LoginPage = (props) => {
 }
 
 const mapStateToProps = (state) => ({
-    error: state.mainPage.error,
-    status: state.mainPage.status
+    error: state.userData.error,
+    status: state.userData.status
 })
 
-const LoginPageContainer = connect(mapStateToProps,{thunkCreator})(LoginPage)
+const LoginPageContainer = connect(mapStateToProps, { thunk })(LoginPage)
 
 export default LoginPageContainer;

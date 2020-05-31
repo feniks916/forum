@@ -1,15 +1,15 @@
 export const getJwt = () => {
-    return localStorage.getItem('cool-jwt');
+    return sessionStorage.getItem('cool-jwt');
   };
 
   export const getName = () => {
-    return localStorage.getItem('cool-name');
+    return sessionStorage.getItem('cool-name');
   }
 
   export const isAuth = () => {
-    return localStorage.getItem('cool-jwt') !== null;
+    return sessionStorage.getItem('cool-jwt') !== null;
   };
 
   export const removeJwt = () => {
-      return localStorage.removeItem('cool-jwt');
+      return sessionStorage.removeItem('cool-jwt');
   }

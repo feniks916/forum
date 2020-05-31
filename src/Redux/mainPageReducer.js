@@ -1,7 +1,7 @@
-import { loginData, postData } from '../API/API'
+import { login, register } from '../API/API'
 
-const SET_TOKEN = 'SET_TOKEN';
-const SET_VALUE = 'SET_VALUE';
+const SET_USER_DATA = 'SET_USER_DATA';
+const SET_STATUS = 'SET_STATUS';
 const SET_ERROR = 'SET_ERROR';
 
 let initialState = {
@@ -13,46 +13,47 @@ let initialState = {
 }
 
 const mainReducer = (state = initialState, action) => {
+    debugger
     switch (action.type) {
-        case SET_TOKEN:
+        case SET_USER_DATA:
             return {
                 ...state,
-                token: action.data.data.user.token,
-                username: action.data.data.user.username,
-                status: action.data.request.status,
+                ...action.payload,
             };
-        case SET_VALUE:
+        case SET_STATUS:
             
             return {
                 ...state,
-                status: action.data.data
+                status: action.payload.data
             };
         case SET_ERROR:
             return {
                 ...state,
-                error: action.data
+                error: action.payload
             };
         default:
             return state;
     }
 }
 
-export const setTokenAC = (data) => ({ type: SET_TOKEN, data });
-export const setValueAC = (data) => ({ type: SET_VALUE, data });
-export const setErrorAC = (data) => ({ type: SET_ERROR, data });
+export const setStatusAC = (data) => ({ type: SET_STATUS, payload:data });
+export const setUserDataAC = (name, token, status) => ({ type: SET_USER_DATA, payload: {name,token,status}});
+export const setErrorAC = (data) => ({ type: SET_ERROR, payload:data });
 
-export const thunkCreator = (data) => {
+export const thunk = (data) => {
     return (dispatch) => {
-        loginData({
+        login({
             user: {
                 email: data.email,
                 password: data.password,
             }
         })
             .then(response => {
-                dispatch(setTokenAC(response));
-                localStorage.setItem('cool-jwt', response.data.user.token);
-                localStorage.setItem('cool-name', response.data.user.username);
+                let {token,username} = response.data;
+                let {status} = response.request;
+                dispatch(setUserDataAC(token, username, status));
+                sessionStorage.setItem('cool-jwt', response.data.user.token);
+                sessionStorage.setItem('cool-name', response.data.user.username);
             })
             .catch(error => {
                 dispatch(setErrorAC(error.response.data.errors))
@@ -61,9 +62,9 @@ export const thunkCreator = (data) => {
 
 }
 
-export const RegistrationThunkCreator = (data) => {
+export const RegistrationThunk = (data) => {
     return (dispatch) => {
-        postData({
+        register({
             user: {
                 email: data.email,
                 password: data.password,
@@ -71,7 +72,7 @@ export const RegistrationThunkCreator = (data) => {
             }
         })
             .then(response => {
-                dispatch(setTokenAC(response))
+                dispatch(setUserDataAC(response))
             })
             .catch(error => {
                 dispatch(setErrorAC(error.response.data.errors))

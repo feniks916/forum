@@ -30,3 +30,22 @@
 .input{
  margin: 10px 0;
 }
+
+.buttonsArea{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    a{
+        padding-top: 20px;
+        padding-left: 10px;
+    }
+    div{
+        margin-right:10px ;
+    }
+}
+
+.errors{
+    p{
+    color: rgb(49, 172, 38);
+    }
+}

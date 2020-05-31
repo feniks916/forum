@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import { setValueAC } from '../../Redux/mainPageReducer';
+import { setStatusAC } from '../../Redux/mainPageReducer';
 import React, { useState, useEffect } from 'react';
 import cls from './main.module.scss';
 import { removeJwt, getJwt, getName } from '../../helpers/token';
@@ -38,14 +38,14 @@ const MainPage = (props) => {
 
   const deleteToken = () => {
     props.history.push('/forum/LoginPage');
-    return props.setValueAC({data: 401});
+    return props.setStatusAC({data: 401});
   }
 
   return (
         <div className={cls.wrapper}>
           <h3> {name} </h3>
           <button
-            onClick={() => deleteToken()}
+            onClick={deleteToken}
           > Выйти </button>
         </div>
   )
@@ -53,12 +53,12 @@ const MainPage = (props) => {
 
 let mapStateToProps = (state) => (
   {
-    username: state.mainPage.username,
-    token: state.mainPage.token,
-    status: state.mainPage.status
+    username: state.userData.username,
+    token: state.userData.token,
+    status: state.userData.status
   }
 )
 
-const mainPageContainer = connect(mapStateToProps, { setValueAC })(MainPage);
+const mainPageContainer = connect(mapStateToProps, { setStatusAC })(MainPage);
 
 export default mainPageContainer;
