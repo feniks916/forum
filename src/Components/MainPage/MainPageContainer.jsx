@@ -2,9 +2,10 @@ import { connect } from 'react-redux';
 import { setStatusAC } from '../../Redux/mainPageReducer';
 import React, { useState, useEffect } from 'react';
 import cls from './main.module.scss';
-import { removeJwt, getJwt, getName, isAuth } from '../../helpers/token';
+import { removeJwt, getJwt, getName } from '../../helpers/token';
 import axios from 'axios';
 import { useHistory } from "react-router-dom";
+import instance from '../../API/API';
 
 const MainPage = (props) => {
   const [name, setName] = useState(null)
@@ -16,14 +17,7 @@ const MainPage = (props) => {
     const fetchData = async () => {
       if (key !== null) {
         try {
-          const result = await axios.get(`https://conduit.productionready.io/api/user`,
-            {
-              headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-                'Authorization': `Token ${key}`,
-              }
-            })
+          const result = await instance.get('/api/user')
           setName(getName())
         } catch (error) {
           if (error) {
@@ -37,7 +31,7 @@ const MainPage = (props) => {
     if (name === null) {
       fetchData();
     }
-  }, [name, props, isAuth() ])
+  }, [name, props ])
 
   const deleteToken = () => {
     removeJwt('cool-jwt')
