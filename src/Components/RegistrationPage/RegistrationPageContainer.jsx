@@ -7,11 +7,14 @@ import { Input } from 'antd';
 import { useHistory } from "react-router-dom";
 import * as Yup from 'yup';
 import cls from './registration.module.scss';
-import { isAuth } from '../../helpers/token';
+import { isAuth, getName } from '../../helpers/token';
 
 const RegistrationPage = props => {
   const { status, error, RegistrationThunk } = props;
   let history = useHistory(); 
+  if(isAuth() && getName() !== null) {
+    history.push("/forum");
+}
   if( status < 300 && status > 199) {
       history.push("/forum");
   }

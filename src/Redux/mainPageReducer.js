@@ -61,20 +61,23 @@ export const thunk = (data) => {
 }
 
 export const RegistrationThunk = (data) => {
-    return (dispatch) => {
-        register({
-            user: {
-                email: data.email,
-                password: data.password,
-                username: data.name,
-            }
-        })
-            .then(response => {
-                dispatch(setUserDataAC(response))
+    return async (dispatch) => {
+        try {
+        const response = await register({
+                user: {
+                    email: data.email,
+                    password: data.password,
+                    username: data.name,
+                }
             })
-            .catch(error => {
-                dispatch(setErrorAC(error.response.data.errors))
-            })
+            let {token,username} = response.data.user;
+            let {status} = response.request;
+            dispatch(setUserDataAC(token, username, status))
+            sessionStorage.setItem('cool-jwt', response.data.user.token);
+            sessionStorage.setItem('cool-name', response.data.user.username);
+        } catch (error) {
+            dispatch(setErrorAC(error.response.data.errors))
+        }
     }
 
 }

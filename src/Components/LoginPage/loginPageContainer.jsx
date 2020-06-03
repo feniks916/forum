@@ -6,15 +6,20 @@ import { Formik } from 'formik';
 import { Input } from 'antd';
 import { useHistory } from "react-router-dom";
 import cls from './login.module.scss';
-import { isAuth,getJwt } from '../../helpers/token';
+import { isAuth,getJwt, getName } from '../../helpers/token';
 
 const LoginPage = (props) => {
     const { status, error, thunk } = props;
     let history = useHistory(); 
 
-    if (status < 300 && status > 199 && isAuth() !== null ) {
-      history.push("/forum");
+    if(isAuth() && getName() !== null) {
+        history.push("/forum");
     }
+
+    if (status < 300 && status > 199) {
+        setTimeout(() => isAuth() && history.push("/forum"), 10);
+        return 'redirecting...'
+        }
     console.log(isAuth())
     return (
         <div className={cls.wrapper}>

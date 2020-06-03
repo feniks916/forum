@@ -5,7 +5,6 @@ import LoginPageContainer from './Components/LoginPage/loginPageContainer';
 import mainPageContainer from './Components/MainPage/MainPageContainer'
 import {Switch, Route} from 'react-router-dom';
 import { ProtectedRoute } from './helpers/protectedRoute';
-import { CommonRoute } from './helpers/CommonRoute';
 
 const App = () => {
   return (
