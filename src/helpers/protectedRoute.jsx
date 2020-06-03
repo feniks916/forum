@@ -11,16 +11,7 @@ export const ProtectedRoute = ({
       {...rest}
       render={props => {
         if (isAuth()) {
-            return (
-                <Redirect
-                  to={{
-                    pathname: "/forum",
-                    state: {
-                      from: props.location
-                    }
-                  }}
-                />
-              );
+            return <Component {...props} />;
         } else {
           return (
             <Redirect

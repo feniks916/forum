@@ -7,8 +7,7 @@ export const getJwt = () => {
   }
 
   export const isAuth = (value = false) => {
-    console.log(`token ${value}`)
-    return value
+    return getJwt() !== null
   };
 
   export const removeJwt = () => {

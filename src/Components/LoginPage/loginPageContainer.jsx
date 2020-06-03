@@ -11,12 +11,11 @@ import { isAuth,getJwt } from '../../helpers/token';
 const LoginPage = (props) => {
     const { status, error, thunk } = props;
     let history = useHistory(); 
-    const auth = () => {
-    if (status < 300 && status > 199 ) {
+
+    if (status < 300 && status > 199 && isAuth() !== null ) {
       history.push("/forum");
-      isAuth(true)
     }
-}
+    console.log(isAuth())
     return (
         <div className={cls.wrapper}>
             <Formik
@@ -81,7 +80,6 @@ const LoginPage = (props) => {
                                     </button>
                                     <button
                                         type="submit" disabled={isSubmitting}
-                                        onClick={auth}
                                         >
                                         Submit
                                     </button>
