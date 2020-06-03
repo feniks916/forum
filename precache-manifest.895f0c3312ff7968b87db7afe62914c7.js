@@ -1,27 +1,27 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "cc5f67eef5cfa3d30948e4c4fcea0fdb",
+    "revision": "f0fdccad99fd11067a3ad97f492aa9a9",
     "url": "/forum/index.html"
   },
   {
-    "revision": "434bf9cd26c3062bd85d",
+    "revision": "67dec98f293539b48d0c",
     "url": "/forum/static/css/2.d7262850.chunk.css"
   },
   {
-    "revision": "e9e8b6d7b23786bc0065",
+    "revision": "eae6dbb50c7e45a0520e",
     "url": "/forum/static/css/main.2702f5c0.chunk.css"
   },
   {
-    "revision": "434bf9cd26c3062bd85d",
-    "url": "/forum/static/js/2.495f214e.chunk.js"
+    "revision": "67dec98f293539b48d0c",
+    "url": "/forum/static/js/2.d384d86f.chunk.js"
   },
   {
     "revision": "cacaf3f01dd3bd8237006f7c58951c1c",
-    "url": "/forum/static/js/2.495f214e.chunk.js.LICENSE.txt"
+    "url": "/forum/static/js/2.d384d86f.chunk.js.LICENSE.txt"
   },
   {
-    "revision": "e9e8b6d7b23786bc0065",
-    "url": "/forum/static/js/main.b9c9157d.chunk.js"
+    "revision": "eae6dbb50c7e45a0520e",
+    "url": "/forum/static/js/main.c00d44b2.chunk.js"
   },
   {
     "revision": "b5486dd6e2168efe0606",
