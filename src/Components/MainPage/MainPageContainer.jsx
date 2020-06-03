@@ -2,11 +2,14 @@ import { connect } from 'react-redux';
 import { setStatusAC } from '../../Redux/mainPageReducer';
 import React, { useState, useEffect } from 'react';
 import cls from './main.module.scss';
-import { removeJwt, getJwt, getName } from '../../helpers/token';
+import { removeJwt, getJwt, getName, isAuth } from '../../helpers/token';
 import axios from 'axios';
+import { useHistory } from "react-router-dom";
 
 const MainPage = (props) => {
   const [name, setName] = useState(null)
+  console.log(getJwt())
+  let history = useHistory(); 
 
   useEffect(() => {
     const key = getJwt()
@@ -25,7 +28,7 @@ const MainPage = (props) => {
         } catch (error) {
           if (error) {
             removeJwt('cool-jwt')
-            props.setValueAC({data: 401});
+            props.setStatusAC({data: 401});
             props.history.push('/forum/LoginPage')
           }
         }
@@ -34,9 +37,10 @@ const MainPage = (props) => {
     if (name === null) {
       fetchData();
     }
-  }, [name, props ])
+  }, [name, props, isAuth() ])
 
   const deleteToken = () => {
+    removeJwt('cool-jwt')
     props.history.push('/forum/LoginPage');
     return props.setStatusAC({data: 401});
   }

@@ -4,15 +4,19 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { Formik } from 'formik';
 import { Input } from 'antd';
-import { Redirect } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import cls from './login.module.scss';
+import { isAuth,getJwt } from '../../helpers/token';
 
 const LoginPage = (props) => {
     const { status, error, thunk } = props;
-    if (status < 300 && status > 199) {
-        return <Redirect to={"/forum"} />
+    let history = useHistory(); 
+    const auth = () => {
+    if (status < 300 && status > 199 ) {
+      history.push("/forum");
+      isAuth(true)
     }
-
+}
     return (
         <div className={cls.wrapper}>
             <Formik
@@ -76,7 +80,9 @@ const LoginPage = (props) => {
                                         Reset
                                     </button>
                                     <button
-                                        type="submit" disabled={isSubmitting}>
+                                        type="submit" disabled={isSubmitting}
+                                        onClick={auth}
+                                        >
                                         Submit
                                     </button>
                                 </div>

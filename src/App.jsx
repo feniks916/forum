@@ -4,13 +4,15 @@ import RegistrationPageContainer from './Components/RegistrationPage/Registratio
 import LoginPageContainer from './Components/LoginPage/loginPageContainer';
 import mainPageContainer from './Components/MainPage/MainPageContainer'
 import {Switch, Route} from 'react-router-dom';
+import { ProtectedRoute } from './helpers/protectedRoute';
+import { CommonRoute } from './helpers/CommonRoute';
 
 const App = () => {
   return (
     <Switch>
       <Route path='/forum/LoginPage' component={LoginPageContainer} />
       <Route path='/forum/Registration' component={RegistrationPageContainer}/>
-      <Route exact path='/forum/' component={mainPageContainer} />
+      <ProtectedRoute exact path='/forum/' component={mainPageContainer} />
     </Switch>
   ) 
 };

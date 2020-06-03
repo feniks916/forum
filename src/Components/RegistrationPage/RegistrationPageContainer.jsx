@@ -4,20 +4,22 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { Formik } from 'formik';
 import { Input } from 'antd';
-import { Redirect } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import * as Yup from 'yup';
 import cls from './registration.module.scss';
+import { isAuth } from '../../helpers/token';
 
 const RegistrationPage = props => {
   const { status, error, RegistrationThunk } = props;
-  if (status < 300 && status > 199) {
-    return <Redirect to={"/forum"} />
+  let history = useHistory(); 
+  if( status < 300 && status > 199) {
+      history.push("/forum");
   }
   return (
     <div className={cls.wrapper}>
       <Formik
         initialValues={{ email: "", name: "", password: "", confirm_password: "" }}
-        onSubmit={async (values, { setSubmitting,resetForm }) => {
+        onSubmit={async (values, { setSubmitting }) => {
           await new Promise(resolve => setTimeout(resolve, 1000));
           setSubmitting(false);
           RegistrationThunk({

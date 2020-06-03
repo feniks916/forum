@@ -13,7 +13,6 @@ let initialState = {
 }
 
 const mainReducer = (state = initialState, action) => {
-    debugger
     switch (action.type) {
         case SET_USER_DATA:
             return {
@@ -24,40 +23,39 @@ const mainReducer = (state = initialState, action) => {
             
             return {
                 ...state,
-                status: action.payload.data
+                status: action.status
             };
         case SET_ERROR:
             return {
                 ...state,
-                error: action.payload
+                error: action.error
             };
         default:
             return state;
     }
 }
 
-export const setStatusAC = (data) => ({ type: SET_STATUS, payload:data });
-export const setUserDataAC = (name, token, status) => ({ type: SET_USER_DATA, payload: {name,token,status}});
-export const setErrorAC = (data) => ({ type: SET_ERROR, payload:data });
+export const setStatusAC = (status) => ({ type: SET_STATUS, status });
+export const setUserDataAC = (token, name, status) => ({ type: SET_USER_DATA, payload: {name,token,status}});
+export const setErrorAC = (error) => ({ type: SET_ERROR, error });
 
 export const thunk = (data) => {
-    return (dispatch) => {
-        login({
-            user: {
-                email: data.email,
-                password: data.password,
-            }
-        })
-            .then(response => {
-                let {token,username} = response.data;
-                let {status} = response.request;
-                dispatch(setUserDataAC(token, username, status));
-                sessionStorage.setItem('cool-jwt', response.data.user.token);
-                sessionStorage.setItem('cool-name', response.data.user.username);
+    return async (dispatch) => {
+        try {
+         const response = await login({
+                user: {
+                    email: data.email,
+                    password: data.password,
+                }
             })
-            .catch(error => {
-                dispatch(setErrorAC(error.response.data.errors))
-            })
+            let {token,username} = response.data.user;
+            let {status} = response.request;
+            dispatch(setUserDataAC(token, username, status));
+            sessionStorage.setItem('cool-jwt', response.data.user.token);
+            sessionStorage.setItem('cool-name', response.data.user.username);
+        } catch (error) {
+            dispatch(setErrorAC(error.response.data.errors))
+        }
     }
 
 }
