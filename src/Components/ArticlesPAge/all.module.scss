@@ -1,0 +1,142 @@
+.wrapper{
+    min-height: 100vh;
+    background-image: url(../../фон.jpg);
+    margin: 0;
+    li{
+        list-style-type: none;
+        
+    }
+    .ul{
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        width: 1400px;
+        flex-wrap: wrap;
+        margin-top: 40px;
+        margin-bottom: 0;
+        .cardFooter{
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            margin: 0;
+            min-height:50px;
+            border-bottom: none;
+            width: 280px;
+            h5{
+                padding:10px ;
+            }
+        }
+        .authorInfo{
+            display: flex;
+            flex-direction: column;
+            margin: 0;
+            margin-left: 20px;
+            min-height:50px;
+            border-bottom: none;
+            width: 280px;
+            margin-bottom: 20px;
+            p{
+                color: #6b6b6b;
+                font-size: 18px;
+                text-align: left;
+                padding-bottom: 0;
+                margin-bottom: 0;
+            }
+            h4{
+                text-align: left;
+            }
+        }
+        li{
+            max-width: 300px;
+            margin-left: 20px;
+            margin-bottom: 20px;
+            background-color: #fff;
+            .card{
+                max-width:300px;
+                height: 350px;
+                margin: 0;
+                padding: 0;
+                display: flex;
+                flex-direction: column;
+                justify-content: start;
+                align-items: center;
+                border: 1px solid #d2d2d2;
+                img{
+                    width: 280px;
+                    margin-top: 10px;
+                }
+                .textBody{
+                    width: 280px;
+                    display: -webkit-box;
+                    -webkit-line-clamp: 1;
+                    -webkit-box-orient: vertical;
+                    overflow-y: hidden;
+                    border-bottom: 1px dotted #898989;
+                    h3{
+                        font-size: 14px;
+                        color: #898989;
+                        text-align: justify;
+                        width: 260px;
+                        padding-left: 15px;
+                        margin-bottom: 4px;
+                    }
+                }
+            }
+        }
+    }
+    .pagination{
+            ul{
+            margin: 0px 35%;
+            padding-top: 20px;
+        }
+    }
+    button{
+        background-color: rgb(255, 255, 255);
+        border: none;
+        color: white;
+        padding: 10px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 10px;
+        margin-left: 40px;
+        margin-top: 10px;
+        border-radius: 3px;
+    }
+    button:hover{
+        box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+    }
+    button:disabled{
+        background-color: #e7e7e7; 
+        color: black;
+    }
+}
+
+.form{
+    width: 400px;
+    height: 300px;
+    margin: 50px auto;
+}
+
+.input{
+ margin: 10px 0;
+}
+
+.buttonsArea{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    a{
+        padding-top: 20px;
+        padding-left: 10px;
+    }
+    div{
+        margin-right:10px ;
+    }
+}
+
+.errors{
+    p{
+    color: rgb(49, 172, 38);
+    }
+}

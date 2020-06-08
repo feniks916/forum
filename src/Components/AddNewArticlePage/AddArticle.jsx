@@ -1,36 +1,30 @@
 import { connect } from 'react-redux';
-import { thunk } from '../../Redux/mainPageReducer';
+import { createArticleThunk } from '../../Redux/Article';
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { Formik } from 'formik';
 import { Input } from 'antd';
 import { useHistory } from "react-router-dom";
-import cls from './login.module.scss';
-import { isAuth, getName } from '../../helpers/token';
+import cls from './add.module.scss';
+import { isAuth,getJwt, getName } from '../../helpers/token';
 
-const LoginPage = (props) => {
-    const { status, error, thunk } = props;
-    let history = useHistory(); 
+const DevelopmentPage = (props) => {
+    const { error, createArticleThunk  } = props;
 
-    if(isAuth() && getName() !== null) {
-        history.push("/forum");
-    }
-
-    if (status < 300 && status > 199) {
-        setTimeout(() => isAuth() && history.push("/forum"), 10);
-        return 'redirecting...'
-        }
-
+    console.log(isAuth())
     return (
         <div className={cls.wrapper}>
+            <NavLink to='/forum/articles'>All Articles</NavLink>
             <Formik
-                initialValues={{ email: "", password: "" }}
+                initialValues={{ title: "", description: "", body: "", tags: [] }}
                 onSubmit={async values => {
                     await new Promise(resolve => setTimeout(resolve, 500));
-                    thunk({
-                        email: values.email,
-                        password: values.password
-                    })
+                    createArticleThunk({article: {
+                        title: values.title,
+                        description: values.description,
+                        body: values.body,
+                        tagList: ''
+                      }})
                 }}
             >
                 {props => {
@@ -46,10 +40,10 @@ const LoginPage = (props) => {
                     return (
                         <form onSubmit={handleSubmit} className={cls.form}>
                             <label htmlFor="email" style={{ display: "block" }}>
-                                Email
+                                Title
                              </label>
                             <Input
-                                id="email"
+                                id="title"
                                 placeholder="Enter your email"
                                 type="text"
                                 value={values.email}
@@ -58,12 +52,12 @@ const LoginPage = (props) => {
                                 className={cls.input}
                             />
                             <label htmlFor="email" style={{ display: "block" }}>
-                                password
+                                Description
                                 </label>
                             <Input
-                                id="password"
+                                id="description"
                                 placeholder="Enter your name"
-                                type="password"
+                                type="text"
                                 value={values.password}
                                 onChange={handleChange}
                                 onBlur={handleBlur}
@@ -72,8 +66,37 @@ const LoginPage = (props) => {
                             {error !== null && error !== 'undefined' && (
                                 <div className={cls.errors}><p>{`email or password ${error["email or password"]}`}</p></div>
                             )}
+                                <label htmlFor="email" style={{ display: "block" }}>
+                                Body
+                                </label>
+                            <Input.TextArea
+                                id="body"
+                                placeholder="Enter your name"
+                                type="text"
+                                value={values.body}
+                                onChange={handleChange}
+                                onBlur={handleBlur}
+                                className={cls.input}
+                            />
+                            {error !== null && error !== 'undefined' && (
+                                <div className={cls.errors}><p>{`email or password ${error["email or password"]}`}</p></div>
+                            )}
+                                <label htmlFor="email" style={{ display: "block" }}>
+                                Tags
+                                </label>
+                             <Input
+                                id="tags"
+                                placeholder="Enter your name"
+                                type="text"
+                                value={values.tags}
+                                onChange={handleChange}
+                                onBlur={handleBlur}
+                                className={cls.input}
+                            />
+                            {error !== null && error !== 'undefined' && (
+                                <div className={cls.errors}><p>{`email or password ${error["email or password"]}`}</p></div>
+                            )}
                             <div className={cls.buttonsArea}>
-                                <NavLink to='/forum/Registration'>Register</NavLink>
                                 <div>
                                     <button
                                         type="button"
@@ -103,6 +126,6 @@ const mapStateToProps = (state) => ({
     status: state.userData.status
 })
 
-const LoginPageContainer = connect(mapStateToProps, { thunk })(LoginPage)
+const DevelopmentPageContainer = connect(mapStateToProps, { createArticleThunk })(DevelopmentPage)
 
-export default LoginPageContainer;
+export default DevelopmentPageContainer;

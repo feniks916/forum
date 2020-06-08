@@ -1,6 +1,6 @@
 import React from "react";
 import { Route, Redirect } from "react-router-dom";
-import { isAuth,getJwt } from "./token";
+import { isAuth } from "./token";
 
 export const ProtectedRoute = ({
   component: Component,

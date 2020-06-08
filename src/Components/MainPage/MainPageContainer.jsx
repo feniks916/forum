@@ -3,14 +3,11 @@ import { setStatusAC } from '../../Redux/mainPageReducer';
 import React, { useState, useEffect } from 'react';
 import cls from './main.module.scss';
 import { removeJwt, getJwt, getName } from '../../helpers/token';
-import axios from 'axios';
-import { useHistory } from "react-router-dom";
+import { useHistory, NavLink } from "react-router-dom";
 import instance from '../../API/API';
 
 const MainPage = (props) => {
   const [name, setName] = useState(null)
-  console.log(getJwt())
-  let history = useHistory(); 
 
   useEffect(() => {
     const key = getJwt()
@@ -42,6 +39,7 @@ const MainPage = (props) => {
   return (
         <div className={cls.wrapper}>
           <h3> {name} </h3>
+          <NavLink to='/forum/articles'>All Articles</NavLink>
           <button
             onClick={deleteToken}
           > Выйти </button>

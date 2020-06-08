@@ -17,5 +17,11 @@ export default instance;
 export const register = registerData =>
 instance.post('/api/users', registerData)
 
+export const updateArticle = updatedData =>
+instance.put(`/api/articles/${sessionStorage.getItem('slug')}`, updatedData)
+
 export const login = (loginData) => 
   instance.post('/api/users/login', loginData)
+
+export const createArticle = (articleData) => 
+  instance.post('/api/articles' ,articleData)
