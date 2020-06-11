@@ -6,18 +6,20 @@ const SET_PAGENUMBER = 'SET_PAGENUMBER';
 const SET_ISLOADED = 'SET_ISLOADED';
 const GET_CURRENT_ARTICLE = 'GET_CURRENT_ARTICLE';
 const GET_SLUG = 'GET_SLUG';
+const MAKE_FAVORITE = 'MAKE_FAVORITE';
+const MAKE_UNFAVORITE = 'MAKE_UNFAVORITE';
+const SET_DELETED_SLUG = 'SET_DELETED_SLUG';
 
 let initialState = {
     articles: [],
     isLoaded: false,
     pageNumber: 1,
-    pageSize: 8,
+    pageSize: 10,
     error: '',
     articlesQuantity: 0,
     currentArticle: { },
     slug: '',
 }
-console.log(initialState.currentArticle)
 
 const articleReducer = (state = initialState, action) => {
     switch (action.type) {
@@ -31,11 +33,39 @@ const articleReducer = (state = initialState, action) => {
                     ...state,
                     error: action.error
             };
+            case MAKE_FAVORITE:
+                return {
+                    ...state,
+                    articles: state.articles.map(el => {
+                        if (el.slug === action.slug)
+                       { return { ...el,favorited: true,
+                        favoritesCount: el.favoritesCount + 1,
+                        }}
+                        return el
+                    })
+            };
+            case MAKE_UNFAVORITE:
+                return {
+                    ...state,
+                    articles: state.articles.map(el => {
+                        if (el.slug === action.slug) {
+                        return { ...el,favorited: false,
+                            favoritesCount: el.favoritesCount - 1,
+                        }
+                    }
+                    return el
+                    })
+            };
             case GET_CURRENT_ARTICLE:
                 return {
                     ...state,
                     currentArticle: action.payload,
             };
+            case SET_DELETED_SLUG:
+                return {
+                    ...state,
+                    articles: state.articles.filter(el => el.slug !== action.slug)
+                }
             case SET_ISLOADED:
                 return {
                     ...state,
@@ -59,6 +89,9 @@ const articleReducer = (state = initialState, action) => {
 export const setArticlesAC = (articles, articlesQuantity, isLoaded) => 
 ({ type: SET_ARTICLES_DATA, payload: {articles, articlesQuantity, isLoaded}});
 export const setErrorAC = (error) => ({ type: SET_ERROR, error });
+export const setDeletedSlug = (slug) => ({type: SET_DELETED_SLUG, slug})
+export const setFavoriteAC = (slug) => ({ type: MAKE_FAVORITE, slug });
+export const setUnfavoriteAC = (slug) => ({ type: MAKE_UNFAVORITE, slug });
 export const setLoadingAC = (isLoaded) => ({ type: SET_ISLOADED, isLoaded });
 export const setPageNumberAC = (pageNumber) => ({ type: SET_PAGENUMBER, pageNumber });
 export const getCurrentArticleAC = 
@@ -67,14 +100,14 @@ export const getCurrentArticleAC =
 export const getSlugAC = (slug) => ({type: GET_SLUG, slug})
 
 
+
+
 export const getArticle = (slug) => {
     return async (dispatch) => {
         try {
             const result = await instance.get(`/api/articles/${slug}`)
             let {body, author, createdAt, description, favoritesCount, favorited, title, tagList, updatedAt} = result.data.article;
             dispatch(getCurrentArticleAC(body, author, createdAt, description, favoritesCount, favorited, title, tagList, updatedAt))
-            console.log(result)
-            console.log(initialState.currentArticle)
         } catch (error) {
             dispatch(setErrorAC(error.response.data.errors))
         }
@@ -82,13 +115,47 @@ export const getArticle = (slug) => {
     
 }
 
+export const deleteArticle = (slug) => {
+    return async (dispatch) => {
+        try {
+            const result = await instance.delete(`/api/articles/${slug}`)
+            dispatch(setDeletedSlug(slug))
+
+        } catch (error) {
+            dispatch(setErrorAC(error))
+        }
+    }
+}
+
+export const likeArticle = (slug) => {
+    return async (dispatch) => {
+        try {
+            const result = await instance.post(`api/articles/${slug}/favorite`)
+            console.log(result)
+
+        } catch (error) {
+            dispatch(setErrorAC(error.response.data.errors))
+        }
+    }
+}
+
+export const unfavoriteArticle = (slug) => {
+    return async (dispatch) => {
+        try {
+            const result = await instance.delete(`api/articles/${slug}/favorite`)
+            console.log(result)
+
+        } catch (error) {
+            dispatch(setErrorAC(error.response.data.errors))
+        }
+    }
+}
+
 export const createArticleThunk = (data) => {
     return async (dispatch) => {
         try {
            const result = await createArticle(data)
-           console.log(result.data) 
         } catch (error) {
-            console.log(error)
             dispatch(setErrorAC(error.response.data.errors))
         }
     }
