@@ -35,7 +35,7 @@ const DevelopmentPage = (props) => {
         <div className={cls.wrapper}>
             <NavLink to='/forum/articles'>All Articles</NavLink>
             <Formik
-                initialValues={{ title: "", description: "", body: "", tags: tagsArray }}
+                initialValues={{ title: "", description: "", body: ""}}
                 onSubmit={async values => {
                     await new Promise(resolve => setTimeout(resolve, 500));
                     createArticleThunk({
@@ -43,7 +43,7 @@ const DevelopmentPage = (props) => {
                             title: values.title,
                             description: values.description,
                             body: values.body,
-                            tagList: values.tags
+                            tagList: tagsArray
                         }
                     })
                 }}
