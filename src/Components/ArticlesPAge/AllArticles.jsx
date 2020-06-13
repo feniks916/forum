@@ -17,6 +17,7 @@ import { setArticlesAC,
          setFavoriteAC,
          setUnfavoriteAC } from '../../Redux/Article'
 import { getName } from '../../helpers/token';
+import {HeartOutlined, HeartFilled} from '@ant-design/icons';
 
 const ArticlesPage = (props) => {
     const history = useHistory();
@@ -71,7 +72,8 @@ const ArticlesPage = (props) => {
     return (
         <div className={cls.wrapper}>
             <button
-                onClick={createArtice}>Create Article</button>
+                onClick={createArtice}> <h4>
+                Create Article</h4></button>
             <div className={cls.pagination}>
                 {pagesQuantity !== 0 &&
                     <Pagination
@@ -109,6 +111,7 @@ const ArticlesPage = (props) => {
                                    <h4> Delete Article</h4>
                                </button>}
                            <img src="https://i.pinimg.com/564x/e4/60/f7/e460f7091d13115e6f0f22f5662b3fe7.jpg" alt="mountain" />
+                           <div className={cls.Card_leftside}>
                            <div className={cls.authorInfo}>
                                <h2>{el.title}</h2>
                                <p>{el.author.username}</p>
@@ -124,13 +127,14 @@ const ArticlesPage = (props) => {
                                           onClick={(e) => {
                                               e.stopPropagation();
                                                dislikeArticle(el.slug)}}
-                                      ><h5>dislike</h5></button>
+                                      ><h5><HeartFilled /></h5><h5>{el.favoritesCount}</h5></button>
                                        : <button
                                           onClick={(e) => {
                                               e.stopPropagation();
                                               likeArticle(el.slug)}}
-                                      ><h5>like</h5></button>}
-                                      <h4>{el.favoritesCount}</h4>
+                                      ><h5><HeartOutlined /></h5><h5>{el.favoritesCount}</h5></button>}
+                                      
+                           </div>
                            </div>
                        </div>
                    </li>

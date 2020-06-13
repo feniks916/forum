@@ -15,4 +15,8 @@ export const getJwt = () => {
   }
 
 
+  export const getSlug = () => {
+    return sessionStorage.getItem('slug');
+  }
+
 

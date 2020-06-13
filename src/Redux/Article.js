@@ -9,6 +9,8 @@ const GET_SLUG = 'GET_SLUG';
 const MAKE_FAVORITE = 'MAKE_FAVORITE';
 const MAKE_UNFAVORITE = 'MAKE_UNFAVORITE';
 const SET_DELETED_SLUG = 'SET_DELETED_SLUG';
+const MAKE_FAVORITE_CURRENT_ARTICLE = 'MAKE_FAVORITE_CURRENT_ARTICLE';
+const MAKE_UNFAVORITE_CURRENT_ARTICLE = 'MAKE_UNFAVORITE_CURRENT_ARTICLE';
 
 let initialState = {
     articles: [],
@@ -17,7 +19,7 @@ let initialState = {
     pageSize: 10,
     error: '',
     articlesQuantity: 0,
-    currentArticle: { },
+    currentArticle: {},
     slug: '',
 }
 
@@ -48,13 +50,28 @@ const articleReducer = (state = initialState, action) => {
                 return {
                     ...state,
                     articles: state.articles.map(el => {
-                        if (el.slug === action.slug) {
+                        if (el.slug === action.slug)
+                        {
                         return { ...el,favorited: false,
                             favoritesCount: el.favoritesCount - 1,
                         }
                     }
                     return el
                     })
+            };
+            case MAKE_FAVORITE_CURRENT_ARTICLE:
+                return {
+                    ...state,
+                    currentArticle: { ...state.currentArticle,favorited: true,
+                        favoritesCount: state.currentArticle.favoritesCount + 1,
+                    }
+            };
+            case MAKE_UNFAVORITE_CURRENT_ARTICLE:
+                return {
+                    ...state,
+                    currentArticle: { ...state.currentArticle,favorited: false,
+                            favoritesCount: state.currentArticle.favoritesCount - 1,
+                        }
             };
             case GET_CURRENT_ARTICLE:
                 return {
@@ -92,6 +109,8 @@ export const setErrorAC = (error) => ({ type: SET_ERROR, error });
 export const setDeletedSlug = (slug) => ({type: SET_DELETED_SLUG, slug})
 export const setFavoriteAC = (slug) => ({ type: MAKE_FAVORITE, slug });
 export const setUnfavoriteAC = (slug) => ({ type: MAKE_UNFAVORITE, slug });
+export const setFavoriteCurrentAC = (slug) => ({ type: MAKE_FAVORITE_CURRENT_ARTICLE, slug });
+export const setUnfavoriteCurrentAC = (slug) => ({ type: MAKE_UNFAVORITE_CURRENT_ARTICLE, slug });
 export const setLoadingAC = (isLoaded) => ({ type: SET_ISLOADED, isLoaded });
 export const setPageNumberAC = (pageNumber) => ({ type: SET_PAGENUMBER, pageNumber });
 export const getCurrentArticleAC = 
@@ -156,6 +175,7 @@ export const createArticleThunk = (data) => {
         try {
            const result = await createArticle(data)
         } catch (error) {
+            console.log(error.response)
             dispatch(setErrorAC(error.response.data.errors))
         }
     }

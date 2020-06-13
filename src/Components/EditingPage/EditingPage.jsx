@@ -12,7 +12,7 @@ const EditPage = (props) => {
     const { error, thunk, currentArticle, slug } = props;
     const {body, description, title, tagList} = currentArticle;
     const sessionSlug = sessionStorage.getItem('slug')
-    console.log(sessionSlug)
+    console.log(error)
 
     useEffect(() => {
         const fetchData = async () => {
@@ -148,7 +148,7 @@ const EditPage = (props) => {
 }
 
 const mapStateToProps = (state) => ({
-    error: state.userData.error,
+    error: state.articlesData.error,
     currentArticle: state.articlesData.currentArticle,
     slug: state.articlesData.slug
 })
