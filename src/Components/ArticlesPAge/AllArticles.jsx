@@ -93,6 +93,47 @@ const ArticlesPage = (props) => {
                        onClick={() => getSlug(el.slug)}
                    >
                        <div className={cls.card}>
+                           <img src="https://i.pinimg.com/564x/e4/60/f7/e460f7091d13115e6f0f22f5662b3fe7.jpg" alt="mountain" />
+                           <div className={cls.Card_leftside}>
+                           <div className={cls.authorInfo}>
+                               <h2>{el.title}</h2>
+                               <p>{el.author.username}</p>
+                               <h4> {el.tagList.join(', ')}</h4>
+                                   <div className={cls.dateValue}>
+                               <h4>created</h4>
+                               <div className={cls.reversedDate}>
+                                {differenceInMinutes( date, getTime(parseISO(`${el.createdAt}`))) >= 60 
+                                    ?<h4>{ `${differenceInMinutes( date, getTime(parseISO(`${el.createdAt}`)))
+                                     - (differenceInHours( date, getTime(parseISO(`${el.createdAt}`))) * 60)} min`}</h4>
+                                     : differenceInMinutes( date, getTime(parseISO(`${el.createdAt}`))) < 1 
+                                     ? <h4>less than minute</h4>
+                                     : <h4>{`${differenceInMinutes( date, getTime(parseISO(`${el.createdAt}`)))} min`}</h4> 
+                               } 
+                               
+                                {differenceInHours( date, getTime(parseISO(`${el.createdAt}`))) >= 24 &&
+                                differenceInHours( date, getTime(parseISO(`${el.createdAt}`)))
+                                - (differenceInDays( date, getTime(parseISO(`${el.createdAt}`))) * 24) > 0
+                                ? 
+                                <h4>{`${differenceInHours( date, getTime(parseISO(`${el.createdAt}`)))
+                               - (differenceInDays( date, getTime(parseISO(`${el.createdAt}`))) * 24)} hours`}</h4>
+                               : ''} 
+                               { differenceInHours( date, getTime(parseISO(`${el.createdAt}`))) < 24 
+                               && differenceInHours( date, getTime(parseISO(`${el.createdAt}`))) > 0
+                               ?<h4> {`${differenceInHours( date, getTime(parseISO(`${el.createdAt}`)))} hours`} </h4>
+                               : '' }
+
+                                {differenceInDays( date, getTime(parseISO(`${el.createdAt}`))) > 0 ?
+                                  <h4>{`${ differenceInDays( date, getTime(parseISO(`${el.createdAt}`)))} days `}</h4>
+                                   : ''
+                            }
+                            </div>
+                            <h4>ago</h4>
+                               </div>
+                           </div>
+                           <div className={cls.textBody}>
+                               <h3>{el.body}</h3>
+                           </div>
+                           <div className={cls.cardFooter}>
                            {username === el.author.username &&
                                <button
                                    onClick={(e) => {
@@ -112,37 +153,6 @@ const ArticlesPage = (props) => {
                                >
                                    <h4> Delete Article</h4>
                                </button>}
-                           <img src="https://i.pinimg.com/564x/e4/60/f7/e460f7091d13115e6f0f22f5662b3fe7.jpg" alt="mountain" />
-                           <div className={cls.Card_leftside}>
-                           <div className={cls.authorInfo}>
-                               <h2>{el.title}</h2>
-                               <p>{el.author.username}</p>
-                               <h4> {el.tagList.join(', ')}</h4>
-                                   <div className={cls.dateValue}>
-                               <h4>created</h4>
-                               <h4> {differenceInMinutes( date, getTime(parseISO(`${el.createdAt}`))) >= 60 
-                                    ? differenceInMinutes( date, getTime(parseISO(`${el.createdAt}`)))
-                                     - (differenceInHours( date, getTime(parseISO(`${el.createdAt}`))) * 60)
-                                     : differenceInMinutes( date, getTime(parseISO(`${el.createdAt}`)))
-                               } min</h4>
-                               <h4> {differenceInHours( date, getTime(parseISO(`${el.createdAt}`))) >= 24 ? 
-                                     differenceInHours( date, getTime(parseISO(`${el.createdAt}`)))
-                               - (differenceInDays( date, getTime(parseISO(`${el.createdAt}`))) * 24)
-                               : differenceInHours( date, getTime(parseISO(`${el.createdAt}`))) < 1 
-                               ? ''
-                               : differenceInHours( date, getTime(parseISO(`${el.createdAt}`)))
-                            } hours</h4>
-                               <h4> {differenceInDays( date, getTime(parseISO(`${el.createdAt}`))) > 0 ?
-                                   differenceInDays( date, getTime(parseISO(`${el.createdAt}`)))
-                                   : ''
-                            } days</h4>
-                            <h4>ago</h4>
-                               </div>
-                           </div>
-                           <div className={cls.textBody}>
-                               <h3>{el.body}</h3>
-                           </div>
-                           <div className={cls.cardFooter}>
                                <h5>{el.description}</h5>
                                     {el.favorited ? <button
                                           onClick={(e) => {

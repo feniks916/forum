@@ -15,11 +15,14 @@ import {
 } from '../../Redux/Article';
 import { getSlug } from '../../helpers/token';
 
+import { parseISO, differenceInMinutes, getTime, differenceInHours, differenceInDays } from 'date-fns';
+
 
 
 const SingleArticlePage = (props) => {
     const { setFavoriteCurrentAC, setUnfavoriteCurrentAC, likeArticle, unfavoriteArticle, article } = props;
     const { body, author, createdAt, description, favoritesCount, favorited, title, tagList, updatedAt } = article;
+    const date = Date.now()
     console.log(article)
     const sessionSlug = sessionStorage.getItem('slug')
     useEffect(() => {
@@ -61,7 +64,36 @@ const SingleArticlePage = (props) => {
                 <p>{description}</p>
                 <p>{favoritesCount}</p>
                 <p>{title}</p>
-                <p>{createdAt}</p>
+                <div className={cls.dateValue}>
+                    <h4>created</h4>
+                    <div className={cls.reversedDate}>
+                        {differenceInMinutes(date, getTime(parseISO(`${createdAt}`))) >= 60
+                            ? <h4>{`${differenceInMinutes(date, getTime(parseISO(`${createdAt}`)))
+                                - (differenceInHours(date, getTime(parseISO(`${createdAt}`))) * 60)} min`}</h4>
+                            : differenceInMinutes(date, getTime(parseISO(`${createdAt}`))) < 1
+                                ? <h4>less than minute</h4>
+                                : <h4>{`${differenceInMinutes(date, getTime(parseISO(`${createdAt}`)))} min`}</h4>
+                        }
+
+                        {differenceInHours(date, getTime(parseISO(`${createdAt}`))) >= 24 &&
+                            differenceInHours(date, getTime(parseISO(`${createdAt}`)))
+                            - (differenceInDays(date, getTime(parseISO(`${createdAt}`))) * 24) > 0
+                            ?
+                            <h4>{`${differenceInHours(date, getTime(parseISO(`${createdAt}`)))
+                                - (differenceInDays(date, getTime(parseISO(`${createdAt}`))) * 24)} hours`}</h4>
+                            : ''}
+                        {differenceInHours(date, getTime(parseISO(`${createdAt}`))) < 24
+                            && differenceInHours(date, getTime(parseISO(`${createdAt}`))) > 0
+                            ? <h4> {`${differenceInHours(date, getTime(parseISO(`${createdAt}`)))} hours`} </h4>
+                            : ''}
+
+                        {differenceInDays(date, getTime(parseISO(`${createdAt}`))) > 0 ?
+                            <h4>{`${differenceInDays(date, getTime(parseISO(`${createdAt}`)))} days `}</h4>
+                            : ''
+                        }
+                    </div>
+                    <h4>ago</h4>
+                </div>
                 <ul>
                     {tagList.map(el => {
                         return <li><p>{el}</p></li>
