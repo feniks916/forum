@@ -18,13 +18,15 @@ import { setArticlesAC,
          setUnfavoriteAC } from '../../Redux/Article'
 import { getName } from '../../helpers/token';
 import {HeartOutlined, HeartFilled} from '@ant-design/icons';
+import { parseISO, differenceInMinutes, getTime, differenceInHours, differenceInDays } from 'date-fns';
 
 const ArticlesPage = (props) => {
     const history = useHistory();
     const username = getName();
     const {articles, pageSize, pageNumber, setArticlesAC, setLoadingAC, setPageNumberAC, getSlugAC, setFavoriteAC,setUnfavoriteAC} = props 
+    const date = Date.now()
+    console.log(date)
 
-    console.log(articles)
 
     const [pagesQuantity, seTpagesQuantity] = useState(1);
     const [page, seTpage] = useState(props.pageNumber)
@@ -116,7 +118,26 @@ const ArticlesPage = (props) => {
                                <h2>{el.title}</h2>
                                <p>{el.author.username}</p>
                                <h4> {el.tagList.join(', ')}</h4>
-                               <h4>{index}</h4>
+                                   <div className={cls.dateValue}>
+                               <h4>created</h4>
+                               <h4> {differenceInMinutes( date, getTime(parseISO(`${el.createdAt}`))) >= 60 
+                                    ? differenceInMinutes( date, getTime(parseISO(`${el.createdAt}`)))
+                                     - (differenceInHours( date, getTime(parseISO(`${el.createdAt}`))) * 60)
+                                     : differenceInMinutes( date, getTime(parseISO(`${el.createdAt}`)))
+                               } min</h4>
+                               <h4> {differenceInHours( date, getTime(parseISO(`${el.createdAt}`))) >= 24 ? 
+                                     differenceInHours( date, getTime(parseISO(`${el.createdAt}`)))
+                               - (differenceInDays( date, getTime(parseISO(`${el.createdAt}`))) * 24)
+                               : differenceInHours( date, getTime(parseISO(`${el.createdAt}`))) < 1 
+                               ? ''
+                               : differenceInHours( date, getTime(parseISO(`${el.createdAt}`)))
+                            } hours</h4>
+                               <h4> {differenceInDays( date, getTime(parseISO(`${el.createdAt}`))) > 0 ?
+                                   differenceInDays( date, getTime(parseISO(`${el.createdAt}`)))
+                                   : ''
+                            } days</h4>
+                            <h4>ago</h4>
+                               </div>
                            </div>
                            <div className={cls.textBody}>
                                <h3>{el.body}</h3>
