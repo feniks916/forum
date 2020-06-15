@@ -12,7 +12,6 @@ const DevelopmentPage = (props) => {
     const { error, createArticleThunk } = props;
     const [tagsArray, setTagsArray] = useState([]);
     let tagInput = '';
-    console.log(tagsArray)
 
     const removeTag = (i) => {
         const arr = tagsArray.splice(i, 1)
@@ -72,7 +71,7 @@ const DevelopmentPage = (props) => {
                                 onBlur={handleBlur}
                                 className={cls.input}
                             />
-                            {error !== '' && error.title !== 'undefined' && (
+                            {error !== '' && error.hasOwnProperty('title') && (
                                 <div className={cls.errors}><p>{`title ${error.title[0]}`}</p></div>
                             )}
                             <label htmlFor="email" style={{ display: "block" }}>
@@ -87,7 +86,7 @@ const DevelopmentPage = (props) => {
                                 onBlur={handleBlur}
                                 className={cls.input}
                             />
-                            {error !== '' && error.description !== 'undefined' && (
+                            {error !== '' && error.hasOwnProperty('description') && (
                                 <div className={cls.errors}><p>{`description ${String(error.description[0])}`}</p></div>
                             )}
                             <label htmlFor="email" style={{ display: "block" }}>
@@ -102,7 +101,7 @@ const DevelopmentPage = (props) => {
                                 onBlur={handleBlur}
                                 className={cls.input}
                             />
-                            {error !== '' && error.body !== 'undefined' && (
+                            {error !== '' && error.hasOwnProperty('body') && (
                                 <div className={cls.errors}><p>{`body ${error.body[0]}`}</p></div>
                             )}
                             <label htmlFor="email" style={{ display: "block" }}>

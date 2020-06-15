@@ -48,6 +48,14 @@
             height: 400px;
             object-fit: cover;
         }
+        ul{
+            display: flex;
+            flex-direction: row;
+            li{
+                list-style-type: none;
+                padding-left: 10px;
+            }
+        }
     }
 }
 

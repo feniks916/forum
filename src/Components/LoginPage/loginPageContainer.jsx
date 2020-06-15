@@ -20,9 +20,14 @@ const LoginPage = (props) => {
         setTimeout(() => isAuth() && history.push("/forum"), 10);
         return 'redirecting...'
         }
-
+        const redirectToArticles = () => {
+            history.push("/forum/articles");
+        }
     return (
         <div className={cls.wrapper}>
+           <button 
+           onClick={redirectToArticles}
+           className={cls.articles}> <p> Atricles</p></button>
             <Formik
                 initialValues={{ email: "", password: "" }}
                 onSubmit={async values => {

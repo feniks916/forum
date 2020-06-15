@@ -16,7 +16,7 @@ import { setArticlesAC,
          unfavoriteArticle,
          setFavoriteAC,
          setUnfavoriteAC } from '../../Redux/Article'
-import { getName } from '../../helpers/token';
+import { getName, isAuth } from '../../helpers/token';
 import {HeartOutlined, HeartFilled} from '@ant-design/icons';
 import { parseISO, differenceInMinutes, getTime, differenceInHours, differenceInDays } from 'date-fns';
 
@@ -25,7 +25,7 @@ const ArticlesPage = (props) => {
     const username = getName();
     const {articles, pageSize, pageNumber, setArticlesAC, setLoadingAC, setPageNumberAC, getSlugAC, setFavoriteAC,setUnfavoriteAC} = props 
     const date = Date.now()
-    console.log(date)
+
 
 
     const [pagesQuantity, seTpagesQuantity] = useState(1);
@@ -74,6 +74,7 @@ const ArticlesPage = (props) => {
     return (
         <div className={cls.wrapper}>
             <button
+            disabled={!isAuth()}
                 onClick={createArtice}> <h4>
                 Create Article</h4></button>
             <div className={cls.pagination}>
@@ -93,14 +94,12 @@ const ArticlesPage = (props) => {
                        onClick={() => getSlug(el.slug)}
                    >
                        <div className={cls.card}>
-                           <img src="https://i.pinimg.com/564x/e4/60/f7/e460f7091d13115e6f0f22f5662b3fe7.jpg" alt="mountain" />
+                           <img src="https://cdn.jevelin.shufflehound.com/wp-content/uploads/sites/11/2016/11/14-768x720.jpg" alt="mountain" />
                            <div className={cls.Card_leftside}>
                            <div className={cls.authorInfo}>
-                               <h2>{el.title}</h2>
-                               <p>{el.author.username}</p>
-                               <h4> {el.tagList.join(', ')}</h4>
+                           
                                    <div className={cls.dateValue}>
-                               <h4>created</h4>
+                                   <p>{`created by ${el.author.username}`}</p>
                                <div className={cls.reversedDate}>
                                 {differenceInMinutes( date, getTime(parseISO(`${el.createdAt}`))) >= 60 
                                     ?<h4>{ `${differenceInMinutes( date, getTime(parseISO(`${el.createdAt}`)))
@@ -129,9 +128,11 @@ const ArticlesPage = (props) => {
                             </div>
                             <h4>ago</h4>
                                </div>
-                           </div>
-                           <div className={cls.textBody}>
-                               <h3>{el.body}</h3>
+                               <h2>{el.title}</h2>
+                                {el.tagList.length > 0 ? 
+                              <h4>{`tags: ${el.tagList.join(', ')}`}</h4>
+                                : <h4>tags: -</h4>
+                            }
                            </div>
                            <div className={cls.cardFooter}>
                            {username === el.author.username &&
@@ -153,14 +154,17 @@ const ArticlesPage = (props) => {
                                >
                                    <h4> Delete Article</h4>
                                </button>}
-                               <h5>{el.description}</h5>
+
                                     {el.favorited ? <button
+                                    disabled={!isAuth()}
                                           onClick={(e) => {
                                               e.stopPropagation();
                                                dislikeArticle(el.slug)}}
                                       ><h5><HeartFilled /></h5><h5>{el.favoritesCount}</h5></button>
                                        : <button
+                                       disabled={!isAuth()}
                                           onClick={(e) => {
+                                              
                                               e.stopPropagation();
                                               likeArticle(el.slug)}}
                                       ><h5><HeartOutlined /></h5><h5>{el.favoritesCount}</h5></button>}

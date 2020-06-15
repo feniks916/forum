@@ -13,7 +13,7 @@ import {
     setUnfavoriteCurrentAC,
     getCurrentArticleAC,
 } from '../../Redux/Article';
-import { getSlug } from '../../helpers/token';
+import { getSlug, isAuth } from '../../helpers/token';
 
 import { parseISO, differenceInMinutes, getTime, differenceInHours, differenceInDays } from 'date-fns';
 
@@ -59,13 +59,12 @@ const SingleArticlePage = (props) => {
         <div className={cls.wrapper}>
             <div className={cls.body}>
                 <img src='https://cdn.jevelin.shufflehound.com/wp-content/uploads/sites/28/2019/09/101_0001_alexandru-acea-bbokzTQjB9o-unsplash-1024x777.jpg' alt="pic" />
-                <p>{body}</p>
-                <p>{author.username}</p>
-                <p>{description}</p>
-                <p>{favoritesCount}</p>
-                <p>{title}</p>
+                
+                
+                
+                
                 <div className={cls.dateValue}>
-                    <h4>created</h4>
+                <p>{`created by ${author.username}`}</p>
                     <div className={cls.reversedDate}>
                         {differenceInMinutes(date, getTime(parseISO(`${createdAt}`))) >= 60
                             ? <h4>{`${differenceInMinutes(date, getTime(parseISO(`${createdAt}`)))
@@ -94,9 +93,13 @@ const SingleArticlePage = (props) => {
                     </div>
                     <h4>ago</h4>
                 </div>
+                <p>{title}</p>
+                <p>{description}</p>
+                <p>{body}</p>
                 <ul>
-                    {tagList.map(el => {
-                        return <li><p>{el}</p></li>
+                    <p>tags: </p>
+                    {tagList.map((el, index) => {
+                        return <li key={index}><p>{el}</p></li>
                     })}
                 </ul>
                 {article.favorited ? <button
@@ -106,6 +109,7 @@ const SingleArticlePage = (props) => {
                     }}
                 ><h5><HeartFilled /></h5><h5>{article.favoritesCount}</h5></button>
                     : <button
+                    disabled={!isAuth()}
                         onClick={(e) => {
                             e.stopPropagation();
                             addLikeToArticle(getSlug())
