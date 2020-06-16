@@ -1,19 +1,30 @@
 import { connect } from 'react-redux';
-import { createArticleThunk } from '../../Redux/Article';
+import { createArticleThunk, setCreatedAC, setErrorAC } from '../../Redux/Article';
 import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { Formik } from 'formik';
-import { Input, Result } from 'antd';
+import { Input, Result, notification  } from 'antd';
 import { useHistory } from "react-router-dom";
 import cls from './add.module.scss';
 import { CloseCircleOutlined } from '@ant-design/icons';
 
 const DevelopmentPage = (props) => {
-    const { error, createArticleThunk, isCreated } = props;
+    const { error, createArticleThunk, isCreated, setCreatedAC, setErrorAC } = props;
     console.log(isCreated)
     const [tagsArray, setTagsArray] = useState([]);
     let tagInput = '';
     let history = useHistory();
+
+    const openNotification = () => {
+        notification.open({
+          message: 'Equal tags can not be added in one tags list',
+          description:
+            'Change or delete this tag and close this window',
+          onClick: () => {
+            console.log('Notification Clicked!');
+          },
+        });
+      };
 
     const removeTag = (i) => {
         const arr = tagsArray.splice(i, 1)
@@ -24,6 +35,7 @@ const DevelopmentPage = (props) => {
         const val = e.target.value;
         if (e.key === 'Shift' && val) {
             if (tagsArray.find(tag => tag.toLowerCase() === val.toLowerCase())) {
+                openNotification()
                 return;
             }
             setTagsArray(tagsArray.concat(val));
@@ -35,6 +47,8 @@ const DevelopmentPage = (props) => {
 
     const redirectToArticles = () => {
         history.push("/forum/articles");
+        setCreatedAC(false);
+        setErrorAC('')
     }
     return (
         <div className={cls.wrapper}>
@@ -179,6 +193,6 @@ const mapStateToProps = (state) => ({
     status: state.userData.status
 })
 
-const DevelopmentPageContainer = connect(mapStateToProps, { createArticleThunk })(DevelopmentPage)
+const DevelopmentPageContainer = connect(mapStateToProps, { createArticleThunk, setCreatedAC, setErrorAC })(DevelopmentPage)
 
 export default DevelopmentPageContainer;

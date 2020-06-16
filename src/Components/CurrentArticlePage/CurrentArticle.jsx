@@ -22,8 +22,8 @@ import { parseISO, differenceInMinutes, getTime, differenceInHours, differenceIn
 const SingleArticlePage = (props) => {
     const { setFavoriteCurrentAC, setUnfavoriteCurrentAC, likeArticle, unfavoriteArticle, article } = props;
     const { body, author, createdAt, description, favoritesCount, favorited, title, tagList, updatedAt } = article;
-    const date = Date.now()
-    console.log(article)
+    const date = Date.now();
+    let history = useHistory();
     const sessionSlug = sessionStorage.getItem('slug')
     useEffect(() => {
         const fetchData = async () => {
@@ -43,26 +43,26 @@ const SingleArticlePage = (props) => {
     }, [sessionSlug, body])
 
     const addLikeToArticle = (slug) => {
-        console.log(slug)
         likeArticle(slug)
         setFavoriteCurrentAC(slug)
     }
 
     const dislikeArticle = (slug) => {
-        console.log(slug)
         unfavoriteArticle(slug)
         setUnfavoriteCurrentAC(slug)
     }
-
+    const redirectToArticles = () => {
+        history.push("/forum/articles");
+    }
 
     return (article.hasOwnProperty('body') &&
         <div className={cls.wrapper}>
+             <button 
+             className={cls.redirect}
+            onClick={redirectToArticles}
+            type="primary" key="console">Atricles</button>
             <div className={cls.body}>
                 <img src='https://cdn.jevelin.shufflehound.com/wp-content/uploads/sites/28/2019/09/101_0001_alexandru-acea-bbokzTQjB9o-unsplash-1024x777.jpg' alt="pic" />
-                
-                
-                
-                
                 <div className={cls.dateValue}>
                 <p>{`created by ${author.username}`}</p>
                     <div className={cls.reversedDate}>
@@ -93,15 +93,18 @@ const SingleArticlePage = (props) => {
                     </div>
                     <h4>ago</h4>
                 </div>
-                <p>{title}</p>
-                <p>{description}</p>
+                <h2>{title}</h2>
+                <h5>{`description: ${description}`}</h5>
+                <div className={cls.article_body}>
                 <p>{body}</p>
+                </div>
                 <ul>
-                    <p>tags: </p>
+                    <span>{tagList.length > 0 ? 'tags:' : 'tags: -' }</span>
                     {tagList.map((el, index) => {
                         return <li key={index}><p>{el}</p></li>
                     })}
                 </ul>
+               {isAuth() && <div>
                 {article.favorited ? <button
                     onClick={(e) => {
                         e.stopPropagation();
@@ -114,8 +117,8 @@ const SingleArticlePage = (props) => {
                             e.stopPropagation();
                             addLikeToArticle(getSlug())
                         }}
-                    ><h5><HeartOutlined /></h5><h5>{article.favoritesCount}</h5></button>}
-                <NavLink to='/forum/articles'>All Articles</NavLink>
+                    ><h5><HeartOutlined /></h5><h5>{article.favoritesCount}</h5></button>}</div>}
+                 {!isAuth() && <h5>{`likes: ${article.favoritesCount}`}</h5> }   
             </div>
         </div>
     )

@@ -3,7 +3,7 @@ import { getCurrentArticleAC,setCreatedAC } from '../../Redux/Article';
 import React, { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 import { Formik } from 'formik';
-import { Input, Result } from 'antd';
+import { Input, Result, notification } from 'antd';
 import { useHistory } from "react-router-dom";
 import cls from './edit.module.scss';
 import instance, { updateArticle } from '../../API/API';
@@ -14,7 +14,7 @@ const EditPage = (props) => {
     const { body, description, title, tagList } = currentArticle;
     const sessionSlug = sessionStorage.getItem('slug');
     const [tagsArray, setTagsArray] = useState([]);
-
+    console.log(error)
     let tagInput = '';
 
     const removeTag = (i) => {
@@ -23,12 +23,25 @@ const EditPage = (props) => {
     }
     const redirectToArticles = () => {
         history.push("/forum/articles");
+        props.setCreatedAC(false)
     }
+
+    const openNotification = () => {
+        notification.open({
+          message: 'Equal tags can not be added in one tags list',
+          description:
+            'Change or delete this tag and close this window',
+          onClick: () => {
+            console.log('Notification Clicked!');
+          },
+        });
+      };
 
     const inputKeyDown = (e) => {
         const val = e.target.value;
         if (e.key === 'Shift' && val) {
             if (tagsArray.find(tag => tag.toLowerCase() === val.toLowerCase())) {
+                openNotification()
                 return;
             }
             setTagsArray(tagsArray.concat(val));
