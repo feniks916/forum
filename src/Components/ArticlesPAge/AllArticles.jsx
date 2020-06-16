@@ -15,7 +15,8 @@ import {
     likeArticle,
     unfavoriteArticle,
     setFavoriteAC,
-    setUnfavoriteAC
+    setUnfavoriteAC,
+    setErrorAC
 } from '../../Redux/Article';
 import {setStatusAC} from '../../Redux/mainPageReducer';
 import { getName, isAuth, removeJwt } from '../../helpers/token';
@@ -25,7 +26,16 @@ import { parseISO, differenceInMinutes, getTime, differenceInHours, differenceIn
 const ArticlesPage = (props) => {
     const history = useHistory();
     const username = getName();
-    const { articles, pageSize, pageNumber, setArticlesAC, setLoadingAC, setPageNumberAC, getSlugAC, setFavoriteAC, setUnfavoriteAC } = props
+    const { articles, 
+        pageSize, 
+        pageNumber, 
+        setArticlesAC, 
+        setLoadingAC, 
+        setPageNumberAC, 
+        getSlugAC, 
+        setFavoriteAC, 
+        setUnfavoriteAC,
+        setErrorAC } = props
     const date = Date.now()
 
 
@@ -80,6 +90,7 @@ const ArticlesPage = (props) => {
         removeJwt('cool-jwt')
         props.history.push('/forum/LoginPage');
         return props.setStatusAC({data: 401});
+        setErrorAC('')
       }
     return (
         <div className={cls.wrapper}>
@@ -223,7 +234,8 @@ const AllArticlesContainer = connect(mapStateToProps,
         likeArticle,
         setFavoriteAC,
         setUnfavoriteAC,
-        setStatusAC
+        setStatusAC,
+        setErrorAC
     })(ArticlesPage)
 
 export default AllArticlesContainer;

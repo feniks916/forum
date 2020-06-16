@@ -74,7 +74,7 @@ const LoginPage = (props) => {
                                 onBlur={handleBlur}
                                 className={cls.input}
                             />
-                            {error !== null && error !== 'undefined' && (
+                            {error !== '' && error !== 'undefined' && (
                                 <div className={cls.errors}><p>{`email or password ${error["email or password"]}`}</p></div>
                             )}
                             <div className={cls.buttonsArea}>
