@@ -1,16 +1,16 @@
 import { connect } from 'react-redux';
-import { getCurrentArticleAC } from '../../Redux/Article';
+import { getCurrentArticleAC,setCreatedAC } from '../../Redux/Article';
 import React, { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 import { Formik } from 'formik';
-import { Input } from 'antd';
+import { Input, Result } from 'antd';
 import { useHistory } from "react-router-dom";
 import cls from './edit.module.scss';
 import instance, { updateArticle } from '../../API/API';
 import { CloseCircleOutlined } from '@ant-design/icons';
 
 const EditPage = (props) => {
-    const { error, thunk, currentArticle, slug } = props;
+    const { error, thunk, currentArticle, slug, isCreated } = props;
     const { body, description, title, tagList } = currentArticle;
     const sessionSlug = sessionStorage.getItem('slug');
     const [tagsArray, setTagsArray] = useState([]);
@@ -20,6 +20,9 @@ const EditPage = (props) => {
     const removeTag = (i) => {
         const arr = tagsArray.splice(i, 1)
         setTagsArray(tagsArray.filter(el => el !== arr[0]));
+    }
+    const redirectToArticles = () => {
+        history.push("/forum/articles");
     }
 
     const inputKeyDown = (e) => {
@@ -57,121 +60,136 @@ const EditPage = (props) => {
 
     return (currentArticle.hasOwnProperty('body') &&
         <div className={cls.wrapper}>
+             {isCreated && 
+                        <Result
+                        status="success"
+                        title="Article updated successfully"
+                        extra={[
+                            <button 
+                            onClick={redirectToArticles}
+                            type="primary" key="console">
+                                Go to Atricles page </button>
+                        ]}
+                    />
+            }
+           {!isCreated && 
             <Formik
-                initialValues={{
-                    title: title,
-                    description: description,
-                    body: body
-                }}
-                onSubmit={async values => {
-                    await new Promise(resolve => setTimeout(resolve, 500));
-                    updateArticle({
-                        article: {
-                            title: values.title,
-                            description: values.description,
-                            body: values.body,
-                            tagList: tagsArray
-                        }
-                    })
-                }}
-            >
-                {props => {
-                    const {
-                        values,
-                        dirty,
-                        isSubmitting,
-                        handleChange,
-                        handleBlur,
-                        handleSubmit,
-                        handleReset
-                    } = props;
-                    return (
-                        <form onSubmit={handleSubmit} className={cls.form}>
-                            <label htmlFor="email" style={{ display: "block" }}>
-                                Title
-                         </label>
-                            <Input
-                                id="title"
-                                placeholder="title"
-                                type="text"
-                                value={values.title}
-                                onChange={handleChange}
-                                onBlur={handleBlur}
-                                className={cls.input}
-                            />
-                            {error !== '' && error.hasOwnProperty('title') && (
-                                <div className={cls.errors}><p>{`title ${error.title[0]}`}</p></div>
-                            )}
-                            <label htmlFor="email" style={{ display: "block" }}>
-                                Description
-                            </label>
-                            <Input
-                                id="description"
-                                placeholder="description"
-                                type="text"
-                                value={values.description}
-                                onChange={handleChange}
-                                onBlur={handleBlur}
-                                className={cls.input}
-                            />
-                            {error !== '' && error.hasOwnProperty('description') && (
-                                <div className={cls.errors}><p>{`description ${String(error.description[0])}`}</p></div>
-                            )}
-                            <label htmlFor="email" style={{ display: "block" }}>
-                                Body
-                            </label>
-                            <Input.TextArea
-                                id="body"
-                                placeholder="body"
-                                type="text"
-                                value={values.body}
-                                onChange={handleChange}
-                                onBlur={handleBlur}
-                                className={cls.input}
-                            />
-                            {error !== '' && error.hasOwnProperty('body') && (
-                                <div className={cls.errors}><p>{`body ${error.body[0]}`}</p></div>
-                            )}
-                            <label htmlFor="email" style={{ display: "block" }}>
-                                Tags
-                            </label>
-                            <div className={cls.tagsArea}>
-                                <ul className={cls.tagsUl}>
-                                    {tagsArray.map((tag, i) => (
-                                        <li key={tag}>
-                                            <h4>
-                                                {tag}
-                                                <button type="button" onClick={() => { removeTag(i) }}><CloseCircleOutlined /></button>
-                                            </h4>
-                                        </li>
-                                    ))}
-                                    <li className={cls.tagsInput}>
-                                        <input type="text" placeholder="press shift for adding tag" onKeyDown={inputKeyDown} ref={c => { tagInput = c; }} />
+            initialValues={{
+                title: title,
+                description: description,
+                body: body
+            }}
+            onSubmit={async values => {
+                await new Promise(resolve => setTimeout(resolve, 500));
+                updateArticle({
+                    article: {
+                        title: values.title,
+                        description: values.description,
+                        body: values.body,
+                        tagList: tagsArray
+                    }
+                })
+                props.setCreatedAC(true)
+            }}
+        >
+            {props => {
+                const {
+                    values,
+                    dirty,
+                    isSubmitting,
+                    handleChange,
+                    handleBlur,
+                    handleSubmit,
+                    handleReset
+                } = props;
+                return (
+                    <form onSubmit={handleSubmit} className={cls.form}>
+                        <label htmlFor="email" style={{ display: "block" }}>
+                            Title
+                     </label>
+                        <Input
+                            id="title"
+                            placeholder="title"
+                            type="text"
+                            value={values.title}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            className={cls.input}
+                        />
+                        {error !== '' && error.hasOwnProperty('title') && (
+                            <div className={cls.errors}><p>{`title ${error.title[0]}`}</p></div>
+                        )}
+                        <label htmlFor="email" style={{ display: "block" }}>
+                            Description
+                        </label>
+                        <Input
+                            id="description"
+                            placeholder="description"
+                            type="text"
+                            value={values.description}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            className={cls.input}
+                        />
+                        {error !== '' && error.hasOwnProperty('description') && (
+                            <div className={cls.errors}><p>{`description ${String(error.description[0])}`}</p></div>
+                        )}
+                        <label htmlFor="email" style={{ display: "block" }}>
+                            Body
+                        </label>
+                        <Input.TextArea
+                            id="body"
+                            placeholder="body"
+                            type="text"
+                            value={values.body}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            className={cls.input}
+                        />
+                        {error !== '' && error.hasOwnProperty('body') && (
+                            <div className={cls.errors}><p>{`body ${error.body[0]}`}</p></div>
+                        )}
+                        <label htmlFor="email" style={{ display: "block" }}>
+                            Tags
+                        </label>
+                        <div className={cls.tagsArea}>
+                            <ul className={cls.tagsUl}>
+                                {tagsArray.map((tag, i) => (
+                                    <li key={tag}>
+                                        <h4>
+                                            {tag}
+                                            <button type="button" onClick={() => { removeTag(i) }}><CloseCircleOutlined /></button>
+                                        </h4>
                                     </li>
-                                </ul>
+                                ))}
+                                <li className={cls.tagsInput}>
+                                    <input type="text" placeholder="press shift for adding tag" onKeyDown={inputKeyDown} ref={c => { tagInput = c; }} />
+                                </li>
+                            </ul>
+                        </div>
+                        <div className={cls.buttonsArea}>
+                            <NavLink to='/forum/articles'>All Articles</NavLink>
+                            <div>
+                                <button
+                                    type="button"
+                                    className="outline"
+                                    onClick={handleReset}
+                                    disabled={!dirty || isSubmitting}
+                                >
+                                    Reset
+                            </button>
+                                <button
+                                    type="submit" disabled={isSubmitting}
+                                >
+                                    Submit
+                            </button>
                             </div>
-                            <div className={cls.buttonsArea}>
-                                <NavLink to='/forum/articles'>All Articles</NavLink>
-                                <div>
-                                    <button
-                                        type="button"
-                                        className="outline"
-                                        onClick={handleReset}
-                                        disabled={!dirty || isSubmitting}
-                                    >
-                                        Reset
-                                </button>
-                                    <button
-                                        type="submit" disabled={isSubmitting}
-                                    >
-                                        Submit
-                                </button>
-                                </div>
-                            </div>
-                        </form>
-                    );
-                }}
-            </Formik>
+                        </div>
+                    </form>
+                );
+            }}
+        </Formik>
+           }
         </div>
     )
 }
@@ -179,9 +197,10 @@ const EditPage = (props) => {
 const mapStateToProps = (state) => ({
     error: state.articlesData.error,
     currentArticle: state.articlesData.currentArticle,
+    isCreated: state.articlesData.isCreated,
     slug: state.articlesData.slug
 })
 
-const EditPageContainer = connect(mapStateToProps, { getCurrentArticleAC })(EditPage)
+const EditPageContainer = connect(mapStateToProps, { getCurrentArticleAC, setCreatedAC })(EditPage)
 
 export default EditPageContainer;

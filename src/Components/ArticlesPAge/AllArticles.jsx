@@ -1,29 +1,31 @@
 import { connect } from 'react-redux';
-import { thunk } from '../../Redux/mainPageReducer';
 import React, { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import instance from '../../API/API'
 import { useHistory } from "react-router-dom";
+import instance from '../../API/API';
 import cls from './all.module.scss';
 import { Pagination } from 'antd';
-import { setArticlesAC, 
-         setPageNumberAC, 
-         setLoadingAC, 
-         getArticle, 
-         getSlugAC, 
-         deleteArticle, 
-         likeArticle, 
-         unfavoriteArticle,
-         setFavoriteAC,
-         setUnfavoriteAC } from '../../Redux/Article'
-import { getName, isAuth } from '../../helpers/token';
-import {HeartOutlined, HeartFilled} from '@ant-design/icons';
+import {
+    setArticlesAC,
+    setPageNumberAC,
+    setLoadingAC,
+    getArticle,
+    getSlugAC,
+    deleteArticle,
+    likeArticle,
+    unfavoriteArticle,
+    setFavoriteAC,
+    setUnfavoriteAC
+} from '../../Redux/Article';
+import {setStatusAC} from '../../Redux/mainPageReducer';
+import { getName, isAuth, removeJwt } from '../../helpers/token';
+import { HeartOutlined, HeartFilled, CloseCircleOutlined, SettingFilled } from '@ant-design/icons';
 import { parseISO, differenceInMinutes, getTime, differenceInHours, differenceInDays } from 'date-fns';
 
 const ArticlesPage = (props) => {
     const history = useHistory();
     const username = getName();
-    const {articles, pageSize, pageNumber, setArticlesAC, setLoadingAC, setPageNumberAC, getSlugAC, setFavoriteAC,setUnfavoriteAC} = props 
+    const { articles, pageSize, pageNumber, setArticlesAC, setLoadingAC, setPageNumberAC, getSlugAC, setFavoriteAC, setUnfavoriteAC } = props
     const date = Date.now()
 
 
@@ -60,8 +62,8 @@ const ArticlesPage = (props) => {
         props.deleteArticle(slug)
     }
     const likeArticle = (slug) => {
-            props.likeArticle(slug)
-            setFavoriteAC(slug)
+        props.likeArticle(slug)
+        setFavoriteAC(slug)
     }
 
     const dislikeArticle = (slug) => {
@@ -71,12 +73,27 @@ const ArticlesPage = (props) => {
     const createArtice = () => {
         history.push("/forum/developmentPage");
     }
+    const redirectToLogin = () => {
+        history.push("/forum/LoginPage");
+    }
+    const deleteToken = () => {
+        removeJwt('cool-jwt')
+        props.history.push('/forum/LoginPage');
+        return props.setStatusAC({data: 401});
+      }
     return (
         <div className={cls.wrapper}>
-            <button
-            disabled={!isAuth()}
+            {!isAuth() && <div className={cls.registered}> <button
+                onClick={redirectToLogin}
+                className={cls.articles}> <h4>Login</h4></button> </div>}
+            {isAuth() && <div className={cls.registered}> <button
                 onClick={createArtice}> <h4>
-                Create Article</h4></button>
+                    Create Article</h4>
+            </button>
+                <button
+                    onClick={deleteToken}
+                > <h4> Log Out</h4> </button> </div>
+            }
             <div className={cls.pagination}>
                 {pagesQuantity !== 0 &&
                     <Pagination
@@ -89,90 +106,92 @@ const ArticlesPage = (props) => {
                     />}
             </div>
             <ul className={cls.ul}>
-                {articles !== 'undefined' && props.isLoaded &&  articles.map((el, index) => {
-                        return <li key={index}
-                       onClick={() => getSlug(el.slug)}
-                   >
-                       <div className={cls.card}>
-                           <img src="https://cdn.jevelin.shufflehound.com/wp-content/uploads/sites/11/2016/11/14-768x720.jpg" alt="mountain" />
-                           <div className={cls.Card_leftside}>
-                           <div className={cls.authorInfo}>
-                           
-                                   <div className={cls.dateValue}>
-                                   <p>{`created by ${el.author.username}`}</p>
-                               <div className={cls.reversedDate}>
-                                {differenceInMinutes( date, getTime(parseISO(`${el.createdAt}`))) >= 60 
-                                    ?<h4>{ `${differenceInMinutes( date, getTime(parseISO(`${el.createdAt}`)))
-                                     - (differenceInHours( date, getTime(parseISO(`${el.createdAt}`))) * 60)} min`}</h4>
-                                     : differenceInMinutes( date, getTime(parseISO(`${el.createdAt}`))) < 1 
-                                     ? <h4>less than minute</h4>
-                                     : <h4>{`${differenceInMinutes( date, getTime(parseISO(`${el.createdAt}`)))} min`}</h4> 
-                               } 
-                               
-                                {differenceInHours( date, getTime(parseISO(`${el.createdAt}`))) >= 24 &&
-                                differenceInHours( date, getTime(parseISO(`${el.createdAt}`)))
-                                - (differenceInDays( date, getTime(parseISO(`${el.createdAt}`))) * 24) > 0
-                                ? 
-                                <h4>{`${differenceInHours( date, getTime(parseISO(`${el.createdAt}`)))
-                               - (differenceInDays( date, getTime(parseISO(`${el.createdAt}`))) * 24)} hours`}</h4>
-                               : ''} 
-                               { differenceInHours( date, getTime(parseISO(`${el.createdAt}`))) < 24 
-                               && differenceInHours( date, getTime(parseISO(`${el.createdAt}`))) > 0
-                               ?<h4> {`${differenceInHours( date, getTime(parseISO(`${el.createdAt}`)))} hours`} </h4>
-                               : '' }
+                {articles !== 'undefined' && props.isLoaded && articles.map((el, index) => {
+                    return <li key={index}
+                        onClick={() => getSlug(el.slug)}
+                    >
+                        <div className={cls.card}>
+                            <img src="https://cdn.jevelin.shufflehound.com/wp-content/uploads/sites/11/2016/11/14-768x720.jpg" alt="mountain" />
+                            <div className={cls.Card_leftside}>
+                                <div className={cls.authorInfo}>
 
-                                {differenceInDays( date, getTime(parseISO(`${el.createdAt}`))) > 0 ?
-                                  <h4>{`${ differenceInDays( date, getTime(parseISO(`${el.createdAt}`)))} days `}</h4>
-                                   : ''
-                            }
+                                    <div className={cls.dateValue}>
+                                        <p>{`created by ${el.author.username}`}</p>
+                                        <div className={cls.reversedDate}>
+                                            {differenceInMinutes(date, getTime(parseISO(`${el.createdAt}`))) >= 60
+                                                ? <h4>{`${differenceInMinutes(date, getTime(parseISO(`${el.createdAt}`)))
+                                                    - (differenceInHours(date, getTime(parseISO(`${el.createdAt}`))) * 60)} min`}</h4>
+                                                : differenceInMinutes(date, getTime(parseISO(`${el.createdAt}`))) < 1
+                                                    ? <h4>less than minute</h4>
+                                                    : <h4>{`${differenceInMinutes(date, getTime(parseISO(`${el.createdAt}`)))} min`}</h4>
+                                            }
+
+                                            {differenceInHours(date, getTime(parseISO(`${el.createdAt}`))) >= 24 &&
+                                                differenceInHours(date, getTime(parseISO(`${el.createdAt}`)))
+                                                - (differenceInDays(date, getTime(parseISO(`${el.createdAt}`))) * 24) > 0
+                                                ?
+                                                <h4>{`${differenceInHours(date, getTime(parseISO(`${el.createdAt}`)))
+                                                    - (differenceInDays(date, getTime(parseISO(`${el.createdAt}`))) * 24)} hours`}</h4>
+                                                : ''}
+                                            {differenceInHours(date, getTime(parseISO(`${el.createdAt}`))) < 24
+                                                && differenceInHours(date, getTime(parseISO(`${el.createdAt}`))) > 0
+                                                ? <h4> {`${differenceInHours(date, getTime(parseISO(`${el.createdAt}`)))} hours`} </h4>
+                                                : ''}
+
+                                            {differenceInDays(date, getTime(parseISO(`${el.createdAt}`))) > 0 ?
+                                                <h4>{`${differenceInDays(date, getTime(parseISO(`${el.createdAt}`)))} days `}</h4>
+                                                : ''
+                                            }
+                                        </div>
+                                        <h4>ago</h4>
+                                    </div>
+                                    <h2>{el.title}</h2>
+                                    {el.tagList.length > 0 ?
+                                        <h4>{`tags: ${el.tagList.join(', ')}`}</h4>
+                                        : <h4>tags: -</h4>
+                                    }
+                                </div>
+                                <div className={cls.cardFooter}>
+                                    {username === el.author.username &&
+                                        <button
+                                        className={cls.change}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                getSlug(el.slug)
+                                                history.push("/forum/editPage");
+                                            }}
+                                        >
+                                            <h4> Change Article <SettingFilled /></h4>
+                                        </button>}
+                                    {username === el.author.username &&
+                                        <button
+                                        className={cls.delete}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                deleteArticle(el.slug)
+                                            }}
+                                        >
+                                            <h4> Delete Article <CloseCircleOutlined /></h4>
+                                        </button>}
+                                    {isAuth() && <div>
+                                        {el.favorited ? <button
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                dislikeArticle(el.slug)
+                                            }}
+                                        ><h5><HeartFilled /></h5><h5>{el.favoritesCount}</h5></button>
+                                            : <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    likeArticle(el.slug)
+                                                }}
+                                            ><h5><HeartOutlined /></h5><h5>{el.favoritesCount}</h5></button>}</div>}
+                                    {!isAuth() && <h5>likes: {el.favoritesCount}</h5>}
+
+                                </div>
                             </div>
-                            <h4>ago</h4>
-                               </div>
-                               <h2>{el.title}</h2>
-                                {el.tagList.length > 0 ? 
-                              <h4>{`tags: ${el.tagList.join(', ')}`}</h4>
-                                : <h4>tags: -</h4>
-                            }
-                           </div>
-                           <div className={cls.cardFooter}>
-                           {username === el.author.username &&
-                               <button
-                                   onClick={(e) => {
-                                       e.stopPropagation();
-                                       getSlug(el.slug)
-                                       history.push("/forum/editPage");
-                                   }}
-                               >
-                                   <h4> Change Article</h4>
-                               </button>}
-                           {username === el.author.username &&
-                               <button
-                                   onClick={(e) => {
-                                       e.stopPropagation();
-                                       deleteArticle(el.slug)
-                                   }}
-                               >
-                                   <h4> Delete Article</h4>
-                               </button>}
-
-                                    {el.favorited ? <button
-                                    disabled={!isAuth()}
-                                          onClick={(e) => {
-                                              e.stopPropagation();
-                                               dislikeArticle(el.slug)}}
-                                      ><h5><HeartFilled /></h5><h5>{el.favoritesCount}</h5></button>
-                                       : <button
-                                       disabled={!isAuth()}
-                                          onClick={(e) => {
-                                              
-                                              e.stopPropagation();
-                                              likeArticle(el.slug)}}
-                                      ><h5><HeartOutlined /></h5><h5>{el.favoritesCount}</h5></button>}
-                                      
-                           </div>
-                           </div>
-                       </div>
-                   </li>
+                        </div>
+                    </li>
 
                 })}
             </ul>
@@ -203,7 +222,8 @@ const AllArticlesContainer = connect(mapStateToProps,
         unfavoriteArticle,
         likeArticle,
         setFavoriteAC,
-        setUnfavoriteAC
+        setUnfavoriteAC,
+        setStatusAC
     })(ArticlesPage)
 
 export default AllArticlesContainer;

@@ -13,11 +13,11 @@ const LoginPage = (props) => {
     let history = useHistory(); 
 
     if(isAuth() && getName() !== null) {
-        history.push("/forum");
+        history.push("/forum/articles");
     }
 
     if (status < 300 && status > 199) {
-        setTimeout(() => isAuth() && history.push("/forum"), 10);
+        setTimeout(() => isAuth() && history.push("/forum/articles"), 10);
         return 'redirecting...'
         }
         const redirectToArticles = () => {
