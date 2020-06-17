@@ -9,7 +9,7 @@ let initialState = {
     token: '',
     value: null,
     status: null,
-    error: null
+    error: ''
 }
 
 const mainReducer = (state = initialState, action) => {
