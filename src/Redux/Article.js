@@ -4,6 +4,7 @@ const SET_ARTICLES_DATA = 'SET_ARTICLES_DATA';
 const SET_ERROR = 'SET_ERROR';
 const SET_PAGENUMBER = 'SET_PAGENUMBER';
 const SET_ISLOADED = 'SET_ISLOADED';
+const SET_RECIEVED = 'SET_RECIEVED';
 const GET_CURRENT_ARTICLE = 'GET_CURRENT_ARTICLE';
 const GET_SLUG = 'GET_SLUG';
 const MAKE_FAVORITE = 'MAKE_FAVORITE';
@@ -16,6 +17,7 @@ const SET_ISCREATED = 'SET_ISCREATED';
 let initialState = {
     articles: [],
     isLoaded: false,
+    isReceived: false,
     pageNumber: 1,
     pageSize: 10,
     error: '',
@@ -95,6 +97,11 @@ const articleReducer = (state = initialState, action) => {
                     ...state,
                     isLoaded: action.isLoaded
             };
+            case SET_RECIEVED:
+                return {
+                    ...state,
+                    isReceived: action.isReceived
+            };
             case GET_SLUG:
                 return {
                     ...state,
@@ -120,11 +127,12 @@ export const setUnfavoriteAC = (slug) => ({ type: MAKE_UNFAVORITE, slug });
 export const setFavoriteCurrentAC = (slug) => ({ type: MAKE_FAVORITE_CURRENT_ARTICLE, slug });
 export const setUnfavoriteCurrentAC = (slug) => ({ type: MAKE_UNFAVORITE_CURRENT_ARTICLE, slug });
 export const setLoadingAC = (isLoaded) => ({ type: SET_ISLOADED, isLoaded });
+export const setRecievedAC = (isReceived) => ({ type: SET_RECIEVED, isReceived });
 export const setPageNumberAC = (pageNumber) => ({ type: SET_PAGENUMBER, pageNumber });
-export const getCurrentArticleAC = 
-    (body, author, createdAt, description, favoritesCount, favorited, title, tagList, updatedAt) => 
-    ({type: GET_CURRENT_ARTICLE, payload: {body, author, createdAt, description, favoritesCount, favorited, title, tagList, updatedAt}})
+export const getCurrentArticleAC = (article) =>  ({type: GET_CURRENT_ARTICLE, payload: article})
 export const getSlugAC = (slug) => ({type: GET_SLUG, slug})
+
+
 
 
 
@@ -133,8 +141,8 @@ export const getArticle = (slug) => {
     return async (dispatch) => {
         try {
             const result = await instance.get(`/api/articles/${slug}`)
-            let {body, author, createdAt, description, favoritesCount, favorited, title, tagList, updatedAt} = result.data.article;
-            dispatch(getCurrentArticleAC(body, author, createdAt, description, favoritesCount, favorited, title, tagList, updatedAt))
+            dispatch(getCurrentArticleAC(result.data.article))
+            dispatch(setRecievedAC(true))
         } catch (error) {
             dispatch(setErrorAC(error.response.data.errors))
         }
@@ -189,5 +197,7 @@ export const createArticleThunk = (data) => {
         }
     }
 }
+
+
 
 export default articleReducer;

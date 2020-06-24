@@ -4,7 +4,7 @@ import { NavLink } from 'react-router-dom';
 import { useHistory } from "react-router-dom";
 import instance from '../../API/API';
 import cls from './all.module.scss';
-import { Pagination } from 'antd';
+import { Pagination, Button, notification } from 'antd';
 import {
     setArticlesAC,
     setPageNumberAC,
@@ -16,7 +16,8 @@ import {
     unfavoriteArticle,
     setFavoriteAC,
     setUnfavoriteAC,
-    setErrorAC
+    setErrorAC,
+    setRecievedAC
 } from '../../Redux/Article';
 import {setStatusAC} from '../../Redux/mainPageReducer';
 import { getName, isAuth, removeJwt } from '../../helpers/token';
@@ -35,10 +36,11 @@ const ArticlesPage = (props) => {
         getSlugAC, 
         setFavoriteAC, 
         setUnfavoriteAC,
-        setErrorAC } = props
+        setErrorAC,
+        getArticle,
+        setRecievedAC,
+    } = props
     const date = Date.now()
-
-
 
     const [pagesQuantity, seTpagesQuantity] = useState(1);
     const [page, seTpage] = useState(props.pageNumber)
@@ -71,6 +73,33 @@ const ArticlesPage = (props) => {
     const deleteArticle = (slug) => {
         props.deleteArticle(slug)
     }
+
+    const close = () => {
+        console.log(
+          'Notification was closed. Either the close button was clicked or duration time elapsed.',
+        );
+      };
+
+    const openNotification = (slug) => {
+        const key = `open${Date.now()}`;
+        const btn = (
+          <Button type="primary" size="small" onClick={() =>{ 
+              notification.close(key)
+            deleteArticle(slug)
+          }}>
+            Confirm
+          </Button>
+        );
+        notification.open({
+          message: 'Notification Title',
+          description:
+            'Are you really want to delete this article?',
+          btn,
+          key,
+          onClose: close,
+        });
+    };
+
     const likeArticle = (slug) => {
         props.likeArticle(slug)
         setFavoriteAC(slug)
@@ -82,6 +111,7 @@ const ArticlesPage = (props) => {
     }
     const createArtice = () => {
         history.push("/forum/developmentPage");
+        setRecievedAC(true)
     }
     const redirectToLogin = () => {
         history.push("/forum/LoginPage");
@@ -169,7 +199,8 @@ const ArticlesPage = (props) => {
                                             onClick={(e) => {
                                                 e.stopPropagation();
                                                 getSlug(el.slug)
-                                                history.push("/forum/editPage");
+                                                getArticle(el.slug)
+                                                history.push("/forum/developmentPage")
                                             }}
                                         >
                                             <h4> Change Article <SettingFilled /></h4>
@@ -179,7 +210,7 @@ const ArticlesPage = (props) => {
                                         className={cls.delete}
                                             onClick={(e) => {
                                                 e.stopPropagation();
-                                                deleteArticle(el.slug)
+                                                openNotification(el.slug)
                                             }}
                                         >
                                             <h4> Delete Article <CloseCircleOutlined /></h4>
@@ -235,7 +266,8 @@ const AllArticlesContainer = connect(mapStateToProps,
         setFavoriteAC,
         setUnfavoriteAC,
         setStatusAC,
-        setErrorAC
+        setErrorAC,
+        setRecievedAC
     })(ArticlesPage)
 
 export default AllArticlesContainer;

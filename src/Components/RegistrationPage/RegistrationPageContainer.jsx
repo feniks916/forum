@@ -3,21 +3,28 @@ import { RegistrationThunk } from '../../Redux/mainPageReducer';
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { Formik } from 'formik';
-import { Input } from 'antd';
+import { Input, Alert } from 'antd';
 import { useHistory } from "react-router-dom";
 import * as Yup from 'yup';
 import cls from './registration.module.scss';
 import { isAuth, getName } from '../../helpers/token';
+import { setErrorAC } from '../../Redux/mainPageReducer';
 
 const RegistrationPage = props => {
-  const { status, error, RegistrationThunk } = props;
+  const { status, error, RegistrationThunk, setErrorAC } = props;
+  console.log(error)
   let history = useHistory(); 
   if(isAuth() && getName() !== null) {
-    history.push("/forum");
+    history.push("/forum/articles");
 }
   if( status < 300 && status > 199) {
-      history.push("/forum");
+      history.push("/forum/articles");
   }
+
+  const resetErrors = () => {
+    setErrorAC('')
+}
+
   return (
     <div className={cls.wrapper}>
       <Formik
@@ -62,8 +69,10 @@ const RegistrationPage = props => {
                 onBlur={handleBlur}
                 className={cls.input}
               />
-              {error !== null && error.email !== undefined && (
-                <div className={cls.errors}><p>{`Email ${String(error.email[0])}`}</p></div>
+              {error !== '' && error.email !== undefined && (
+                <div className={cls.errors}>
+                <Alert message={`Email ${String(error.email[0])}`} type="error" showIcon />
+                </div>
               )}
               <label htmlFor="email" style={{ display: "block" }}>
                 Name
@@ -77,8 +86,10 @@ const RegistrationPage = props => {
                 onBlur={handleBlur}
                 className={cls.input}
               />
-              {error !== null && error.username !== undefined && (
-                <div className={cls.errors}><p>{`Name ${String(error.username[0])}`}</p></div>
+              {error !== '' && error.username !== undefined && (
+                <div className={cls.errors}>
+                <Alert message={`Name ${String(error.username[0])}`} type="error" showIcon />
+                </div>
               )}
               <label htmlFor="email" style={{ display: "block" }}>
                 Password
@@ -92,8 +103,10 @@ const RegistrationPage = props => {
                 onBlur={handleBlur}
                 className={cls.input}
               />
-              {error !== null && error.password !== undefined && (
-                <div className={cls.errors}><p>{`Password ${String(error.password[0])}`}</p></div>
+              {error !== '' && error.password !== undefined && (
+                <div className={cls.errors}>
+                <Alert message={`Password ${String(error.password[0])}`} type="error" showIcon />
+                </div>
               )}
               <label htmlFor="email" style={{ display: "block" }}>
                 Repeat Password
@@ -116,7 +129,9 @@ const RegistrationPage = props => {
               <button
                 type="button"
                 className="outline"
-                onClick={handleReset}
+                onClick={() => { 
+                  handleReset()
+                  resetErrors() }}
                 disabled={!dirty || isSubmitting}
               >
                 Reset
@@ -140,6 +155,6 @@ const mapStateToProps = (state) => ({
   status: state.userData.status
 })
 
-const RegistrationPageContainer = connect(mapStateToProps, { RegistrationThunk })(RegistrationPage)
+const RegistrationPageContainer = connect(mapStateToProps, { RegistrationThunk, setErrorAC })(RegistrationPage)
 
 export default RegistrationPageContainer;

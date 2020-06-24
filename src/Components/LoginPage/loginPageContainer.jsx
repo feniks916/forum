@@ -1,19 +1,23 @@
 import { connect } from 'react-redux';
-import { thunk } from '../../Redux/mainPageReducer';
+import { thunk, setErrorAC } from '../../Redux/mainPageReducer';
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { Formik } from 'formik';
-import { Input } from 'antd';
+import { Input, Alert } from 'antd';
 import { useHistory } from "react-router-dom";
 import cls from './login.module.scss';
 import { isAuth, getName } from '../../helpers/token';
 
 const LoginPage = (props) => {
-    const { status, error, thunk } = props;
+    const { status, error, thunk, setErrorAC } = props;
     let history = useHistory(); 
 
     if(isAuth() && getName() !== null) {
         history.push("/forum/articles");
+    }
+
+    const resetErrors = () => {
+        setErrorAC('')
     }
 
     if (status < 300 && status > 199) {
@@ -75,7 +79,9 @@ const LoginPage = (props) => {
                                 className={cls.input}
                             />
                             {error !== '' && error !== 'undefined' && (
-                                <div className={cls.errors}><p>{`email or password ${error["email or password"]}`}</p></div>
+                                <div className={cls.errors}>
+                                <Alert message={`email or password ${error["email or password"]}`} type="error" showIcon />
+                                </div>
                             )}
                             <div className={cls.buttonsArea}>
                                 <NavLink to='/forum/Registration'>Register</NavLink>
@@ -83,7 +89,10 @@ const LoginPage = (props) => {
                                     <button
                                         type="button"
                                         className="outline"
-                                        onClick={handleReset}
+                                        onClick={() => { 
+                                            handleReset()
+                                            resetErrors()
+                                        }}
                                         disabled={!dirty || isSubmitting}
                                     >
                                         Reset
@@ -108,6 +117,6 @@ const mapStateToProps = (state) => ({
     status: state.userData.status
 })
 
-const LoginPageContainer = connect(mapStateToProps, { thunk })(LoginPage)
+const LoginPageContainer = connect(mapStateToProps, { thunk, setErrorAC })(LoginPage)
 
 export default LoginPageContainer;

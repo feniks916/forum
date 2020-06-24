@@ -1,33 +1,48 @@
 import { connect } from 'react-redux';
-import { createArticleThunk, setCreatedAC, setErrorAC } from '../../Redux/Article';
+import { createArticleThunk, setCreatedAC, setErrorAC, getCurrentArticleAC,setRecievedAC } from '../../Redux/Article';
 import React, { useState } from 'react';
-import { NavLink } from 'react-router-dom';
 import { Formik } from 'formik';
-import { Input, Result, notification  } from 'antd';
+import { Input, Result, notification, Alert, Spin } from 'antd';
 import { useHistory } from "react-router-dom";
 import cls from './add.module.scss';
 import { CloseCircleOutlined } from '@ant-design/icons';
+import { updateArticle } from '../../API/API';
 
 const DevelopmentPage = (props) => {
-    const { error, createArticleThunk, isCreated, setCreatedAC, setErrorAC } = props;
-    console.log(isCreated)
+    const { error, 
+        createArticleThunk, 
+        isCreated, 
+        setCreatedAC, 
+        setErrorAC, 
+        currentArticle, 
+        isReceived,
+        getCurrentArticleAC,
+        setRecievedAC } = props;
+    const { body, description, title, tagList } = currentArticle;
+    console.log(tagList)
     const [tagsArray, setTagsArray] = useState([]);
     let tagInput = '';
     let history = useHistory();
 
     const openNotification = () => {
         notification.open({
-          message: 'Equal tags can not be added in one tags list',
-          description:
-            'Change or delete this tag and close this window',
-          onClick: () => {
-            console.log('Notification Clicked!');
-          },
+            message: 'Equal tags can not be added in one tags list',
+            description:
+                'Change or delete this tag and close this window',
+            onClick: () => {
+                console.log('Notification Clicked!');
+            },
         });
-      };
+    };
+
+
+    const resetErrors = () => {
+        setErrorAC('')
+    }
 
     const removeTag = (i) => {
-        const arr = tagsArray.splice(i, 1)
+        const tags = tagsArray
+        const arr = tags.splice(i, 1)
         setTagsArray(tagsArray.filter(el => el !== arr[0]));
     }
 
@@ -49,27 +64,46 @@ const DevelopmentPage = (props) => {
         history.push("/forum/articles");
         setCreatedAC(false);
         setErrorAC('')
+        getCurrentArticleAC({})
+        setRecievedAC(false)
     }
     return (
         <div className={cls.wrapper}>
-            {isCreated && 
-                        <Result
-                        status="success"
-                        title="Article created successfully"
-                        extra={[
-                            <button 
+            {isCreated &&
+                <Result
+                    status="success"
+                    title={currentArticle.hasOwnProperty('body')
+                        ? "Article updated successfully"
+                        : "Article created successfully"}
+                    extra={[
+                        <button
                             onClick={redirectToArticles}
                             type="primary" key="console">
-                                Go to Atricles page </button>
-                        ]}
-                    />
+                            Go to Atricles page </button>
+                    ]}
+                />
             }
 
-            {!isCreated && 
-                    <Formik
-                        initialValues={{ title: "", description: "", body: "" }}
-                        onSubmit={async values => {
-                            await new Promise(resolve => setTimeout(resolve, 500));
+            {!isReceived && <Spin size="large" />}
+
+            {!isCreated && isReceived &&
+                <Formik
+
+                    initialValues={{ title: title || "", description: description || "", body: body || "" }}
+                    onSubmit={async values => {
+                        await new Promise(resolve => setTimeout(resolve, 500));
+                        if (currentArticle.hasOwnProperty('body')) {
+                            updateArticle({
+                                article: {
+                                    title: values.title,
+                                    description: values.description,
+                                    body: values.body,
+                                    tagList: tagsArray
+                                }
+                            })
+                            setCreatedAC(true)
+                        }
+                        else {
                             createArticleThunk({
                                 article: {
                                     title: values.title,
@@ -78,24 +112,26 @@ const DevelopmentPage = (props) => {
                                     tagList: tagsArray
                                 }
                             })
-                        }}
-                    >
-                        {props => {
-                            const {
-                                values,
-                                dirty,
-                                isSubmitting,
-                                handleChange,
-                                handleBlur,
-                                handleSubmit,
-                                handleReset
-                            } = props;
-                            return (
-                                <div>
-                                                                    <button
-                                onClick={redirectToArticles}
-                                className={cls.articles}> <p> Atricles</p></button>
-                                
+                            setCreatedAC(true)
+                        }
+                    }}
+                >
+                    {props => {
+                        const {
+                            values,
+                            dirty,
+                            isSubmitting,
+                            handleChange,
+                            handleBlur,
+                            handleSubmit,
+                            handleReset
+                        } = props;
+                        return (
+                            <div>
+                                <button
+                                    onClick={redirectToArticles}
+                                    className={cls.articles}> <p> Atricles</p></button>
+
                                 <form onSubmit={handleSubmit} className={cls.form}>
                                     <label htmlFor="email" style={{ display: "block" }}>
                                         Title
@@ -109,8 +145,8 @@ const DevelopmentPage = (props) => {
                                         onBlur={handleBlur}
                                         className={cls.input}
                                     />
-                                    {error !== '' && error.hasOwnProperty('title') && (
-                                        <div className={cls.errors}><p>{`title ${error.title[0]}`}</p></div>
+                                    {error !== '' && error !== '' && error.hasOwnProperty('title') && (
+                                        <div className={cls.errors}><Alert message={`title ${error.title[0]}`} type="error" showIcon /></div>
                                     )}
                                     <label htmlFor="email" style={{ display: "block" }}>
                                         Description
@@ -125,7 +161,7 @@ const DevelopmentPage = (props) => {
                                         className={cls.input}
                                     />
                                     {error !== '' && error.hasOwnProperty('description') && (
-                                        <div className={cls.errors}><p>{`description ${String(error.description[0])}`}</p></div>
+                                        <div className={cls.errors}><Alert message={`description ${error.description[0]}`} type="error" showIcon /></div>
                                     )}
                                     <label htmlFor="email" style={{ display: "block" }}>
                                         Body
@@ -140,7 +176,9 @@ const DevelopmentPage = (props) => {
                                         className={cls.input}
                                     />
                                     {error !== '' && error.hasOwnProperty('body') && (
-                                        <div className={cls.errors}><p>{`body ${error.body[0]}`}</p></div>
+                                        <div className={cls.errors}>
+                                            <Alert message={`body ${error.body[0]}`} type="error" showIcon />
+                                        </div>
                                     )}
                                     <label htmlFor="email" style={{ display: "block" }}>
                                         Tags
@@ -156,7 +194,7 @@ const DevelopmentPage = (props) => {
                                                 </li>
                                             ))}
                                             <li className={cls.tagsInput}>
-                                                <input type="text" placeholder="press shift for adding tag" onKeyDown={inputKeyDown} ref={c => { tagInput = c; }} />
+                                                <input type="text" placeholder="Press shift for adding tag" onKeyDown={inputKeyDown} ref={c => { tagInput = c; }} />
                                             </li>
                                         </ul>
                                     </div>
@@ -165,7 +203,10 @@ const DevelopmentPage = (props) => {
                                             <button
                                                 type="button"
                                                 className="outline"
-                                                onClick={handleReset}
+                                                onClick={() => {
+                                                    resetErrors()
+                                                    handleReset()
+                                                }}
                                                 disabled={!dirty || isSubmitting}
                                             >
                                                 Reset
@@ -178,10 +219,10 @@ const DevelopmentPage = (props) => {
                                         </div>
                                     </div>
                                 </form>
-                                </div>
-                            );
-                        }}
-                    </Formik>
+                            </div>
+                        );
+                    }}
+                </Formik>
             }
         </div>
     )
@@ -190,9 +231,18 @@ const DevelopmentPage = (props) => {
 const mapStateToProps = (state) => ({
     error: state.articlesData.error,
     isCreated: state.articlesData.isCreated,
-    status: state.userData.status
+    status: state.userData.status,
+    currentArticle: state.articlesData.currentArticle,
+    isReceived: state.articlesData.isReceived
 })
 
-const DevelopmentPageContainer = connect(mapStateToProps, { createArticleThunk, setCreatedAC, setErrorAC })(DevelopmentPage)
+const DevelopmentPageContainer = connect(mapStateToProps, 
+    { 
+    createArticleThunk, 
+    setCreatedAC, 
+    setErrorAC,
+    getCurrentArticleAC,
+    setRecievedAC
+    })(DevelopmentPage)
 
 export default DevelopmentPageContainer;

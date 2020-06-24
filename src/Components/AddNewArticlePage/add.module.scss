@@ -32,9 +32,11 @@
         padding-left: 0;
         .tagsInput{
             width: 100%;
+            border: 1px solid #d9d9d9;
             input{
                 border: none;
                 width: 100%;
+                padding: 5px 12px;
             }
         }
         li{
@@ -82,5 +84,13 @@
 .errors{
     p{
     color: #D8000C;
+    }
+    button{
+        padding: 0;
+        margin: 0;
+        background-color: rgba(0, 139, 186, 0);
+    }
+    button:hover{
+        box-shadow: none;
     }
 }
