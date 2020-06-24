@@ -1,28 +1,48 @@
 import { connect } from 'react-redux';
-import { createArticleThunk, setCreatedAC, setErrorAC, getCurrentArticleAC,setRecievedAC } from '../../Redux/Article';
-import React, { useState } from 'react';
-import { Formik } from 'formik';
-import { Input, Result, notification, Alert, Spin } from 'antd';
+import { createArticleThunk, setCreatedAC, setErrorAC, getCurrentArticleAC, setRecievedAC } from '../../Redux/Article';
+import React, { useState, useEffect, useRef } from 'react';
+import { Formik, FieldArray, Field } from 'formik';
+import { Input, Result, notification, Alert, Spin, } from 'antd';
 import { useHistory } from "react-router-dom";
 import cls from './add.module.scss';
+import * as Yup from 'yup';
 import { CloseCircleOutlined } from '@ant-design/icons';
-import { updateArticle } from '../../API/API';
+import instance, { updateArticle } from '../../API/API';
 
 const DevelopmentPage = (props) => {
-    const { error, 
-        createArticleThunk, 
-        isCreated, 
-        setCreatedAC, 
-        setErrorAC, 
-        currentArticle, 
+    const {
+        createArticleThunk,
+        isCreated,
+        setCreatedAC,
+        setErrorAC,
+        currentArticle,
         isReceived,
         getCurrentArticleAC,
         setRecievedAC } = props;
     const { body, description, title, tagList } = currentArticle;
-    console.log(tagList)
     const [tagsArray, setTagsArray] = useState([]);
-    let tagInput = '';
+
     let history = useHistory();
+    let inputGift = useRef(null);
+    const sessionSlug = sessionStorage.getItem('slug');
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const result = await instance.get(`/api/articles/${sessionSlug}`)
+                setTagsArray(result.data.article.tagList)
+                getCurrentArticleAC(result.data.article)
+                setRecievedAC(true)
+            } catch (error) {
+                if (error) {
+                    console.log(error)
+                }
+            }
+        }
+        if (sessionSlug !== null && isReceived === false) {
+            fetchData();
+        }
+    }, [body, isReceived])
 
     const openNotification = () => {
         notification.open({
@@ -46,7 +66,7 @@ const DevelopmentPage = (props) => {
         setTagsArray(tagsArray.filter(el => el !== arr[0]));
     }
 
-    const inputKeyDown = (e) => {
+    const onKeyDown = (e) => {
         const val = e.target.value;
         if (e.key === 'Shift' && val) {
             if (tagsArray.find(tag => tag.toLowerCase() === val.toLowerCase())) {
@@ -54,7 +74,7 @@ const DevelopmentPage = (props) => {
                 return;
             }
             setTagsArray(tagsArray.concat(val));
-            tagInput.value = null;
+            inputGift.current.value = '';
         } else if (e.key === 'Backspace' && !val) {
             removeTag(tagsArray.length - 1);
         }
@@ -89,7 +109,10 @@ const DevelopmentPage = (props) => {
             {!isCreated && isReceived &&
                 <Formik
 
-                    initialValues={{ title: title || "", description: description || "", body: body || "" }}
+                    initialValues={{
+                        title: title || "", description: description || "", body: body || "", tags: tagsArray,
+                        people: [{ id: "5", firstName: "bob", lastName: "bob2" }]
+                    }}
                     onSubmit={async values => {
                         await new Promise(resolve => setTimeout(resolve, 500));
                         if (currentArticle.hasOwnProperty('body')) {
@@ -115,11 +138,21 @@ const DevelopmentPage = (props) => {
                             setCreatedAC(true)
                         }
                     }}
+                    validationSchema={Yup.object().shape({
+                        title: Yup.string()
+                        .required('field shouldnt be empty'),
+                        description: Yup.string()
+                        .required('field shouldnt be empty'),
+                        body: Yup.string()
+                        .required('field shouldnt be empty'),
+                    })}
                 >
                     {props => {
                         const {
                             values,
                             dirty,
+                            errors,
+                            touched,
                             isSubmitting,
                             handleChange,
                             handleBlur,
@@ -145,8 +178,8 @@ const DevelopmentPage = (props) => {
                                         onBlur={handleBlur}
                                         className={cls.input}
                                     />
-                                    {error !== '' && error !== '' && error.hasOwnProperty('title') && (
-                                        <div className={cls.errors}><Alert message={`title ${error.title[0]}`} type="error" showIcon /></div>
+                                    {errors.title && touched.title && (
+                                        <div className={cls.errors}><Alert message={errors.title} type="error" showIcon /></div>
                                     )}
                                     <label htmlFor="email" style={{ display: "block" }}>
                                         Description
@@ -160,8 +193,8 @@ const DevelopmentPage = (props) => {
                                         onBlur={handleBlur}
                                         className={cls.input}
                                     />
-                                    {error !== '' && error.hasOwnProperty('description') && (
-                                        <div className={cls.errors}><Alert message={`description ${error.description[0]}`} type="error" showIcon /></div>
+                                    {errors.description && touched.description && (
+                                        <div className={cls.errors}><Alert message={errors.description} type="error" showIcon /></div>
                                     )}
                                     <label htmlFor="email" style={{ display: "block" }}>
                                         Body
@@ -175,11 +208,10 @@ const DevelopmentPage = (props) => {
                                         onBlur={handleBlur}
                                         className={cls.input}
                                     />
-                                    {error !== '' && error.hasOwnProperty('body') && (
-                                        <div className={cls.errors}>
-                                            <Alert message={`body ${error.body[0]}`} type="error" showIcon />
-                                        </div>
+                                    {errors.body && touched.body && (
+                                        <div className={cls.errors}><Alert message={errors.body} type="error" showIcon /></div>
                                     )}
+                                   
                                     <label htmlFor="email" style={{ display: "block" }}>
                                         Tags
                                         </label>
@@ -194,7 +226,7 @@ const DevelopmentPage = (props) => {
                                                 </li>
                                             ))}
                                             <li className={cls.tagsInput}>
-                                                <input type="text" placeholder="Press shift for adding tag" onKeyDown={inputKeyDown} ref={c => { tagInput = c; }} />
+                                                <input type="text" placeholder="Press shift for adding tag" onKeyDown={onKeyDown} ref={inputGift} />
                                             </li>
                                         </ul>
                                     </div>
@@ -229,20 +261,19 @@ const DevelopmentPage = (props) => {
 }
 
 const mapStateToProps = (state) => ({
-    error: state.articlesData.error,
     isCreated: state.articlesData.isCreated,
     status: state.userData.status,
     currentArticle: state.articlesData.currentArticle,
     isReceived: state.articlesData.isReceived
 })
 
-const DevelopmentPageContainer = connect(mapStateToProps, 
-    { 
-    createArticleThunk, 
-    setCreatedAC, 
-    setErrorAC,
-    getCurrentArticleAC,
-    setRecievedAC
+const DevelopmentPageContainer = connect(mapStateToProps,
+    {
+        createArticleThunk,
+        setCreatedAC,
+        setErrorAC,
+        getCurrentArticleAC,
+        setRecievedAC
     })(DevelopmentPage)
 
 export default DevelopmentPageContainer;

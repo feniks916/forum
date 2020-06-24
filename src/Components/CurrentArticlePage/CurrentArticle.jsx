@@ -16,6 +16,7 @@ import {
 import { getSlug, isAuth } from '../../helpers/token';
 
 import { parseISO, differenceInMinutes, getTime, differenceInHours, differenceInDays } from 'date-fns';
+import { timeCreator } from '../../helpers/timeCreator';
 
 
 
@@ -29,8 +30,7 @@ const SingleArticlePage = (props) => {
         const fetchData = async () => {
             try {
                 const result = await instance.get(`/api/articles/${sessionSlug}`)
-                const { body, author, createdAt, description, favoritesCount, favorited, title, tagList, updatedAt } = result.data.article
-                props.getCurrentArticleAC(body, author, createdAt, description, favoritesCount, favorited, title, tagList, updatedAt)
+                props.getCurrentArticleAC(result.data.article)
             } catch (error) {
                 if (error) {
                     console.log(error)
@@ -66,30 +66,7 @@ const SingleArticlePage = (props) => {
                 <div className={cls.dateValue}>
                 <p>{`created by ${author.username}`}</p>
                     <div className={cls.reversedDate}>
-                        {differenceInMinutes(date, getTime(parseISO(`${createdAt}`))) >= 60
-                            ? <h4>{`${differenceInMinutes(date, getTime(parseISO(`${createdAt}`)))
-                                - (differenceInHours(date, getTime(parseISO(`${createdAt}`))) * 60)} min`}</h4>
-                            : differenceInMinutes(date, getTime(parseISO(`${createdAt}`))) < 1
-                                ? <h4>less than minute</h4>
-                                : <h4>{`${differenceInMinutes(date, getTime(parseISO(`${createdAt}`)))} min`}</h4>
-                        }
-
-                        {differenceInHours(date, getTime(parseISO(`${createdAt}`))) >= 24 &&
-                            differenceInHours(date, getTime(parseISO(`${createdAt}`)))
-                            - (differenceInDays(date, getTime(parseISO(`${createdAt}`))) * 24) > 0
-                            ?
-                            <h4>{`${differenceInHours(date, getTime(parseISO(`${createdAt}`)))
-                                - (differenceInDays(date, getTime(parseISO(`${createdAt}`))) * 24)} hours`}</h4>
-                            : ''}
-                        {differenceInHours(date, getTime(parseISO(`${createdAt}`))) < 24
-                            && differenceInHours(date, getTime(parseISO(`${createdAt}`))) > 0
-                            ? <h4> {`${differenceInHours(date, getTime(parseISO(`${createdAt}`)))} hours`} </h4>
-                            : ''}
-
-                        {differenceInDays(date, getTime(parseISO(`${createdAt}`))) > 0 ?
-                            <h4>{`${differenceInDays(date, getTime(parseISO(`${createdAt}`)))} days `}</h4>
-                            : ''
-                        }
+                       <h4> {timeCreator(createdAt)}</h4>
                     </div>
                     <h4>ago</h4>
                 </div>

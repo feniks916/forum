@@ -23,6 +23,7 @@ import {setStatusAC} from '../../Redux/mainPageReducer';
 import { getName, isAuth, removeJwt } from '../../helpers/token';
 import { HeartOutlined, HeartFilled, CloseCircleOutlined, SettingFilled } from '@ant-design/icons';
 import { parseISO, differenceInMinutes, getTime, differenceInHours, differenceInDays } from 'date-fns';
+import { timeCreator } from '../../helpers/timeCreator';
 
 const ArticlesPage = (props) => {
     const history = useHistory();
@@ -159,30 +160,7 @@ const ArticlesPage = (props) => {
                                     <div className={cls.dateValue}>
                                         <p>{`created by ${el.author.username}`}</p>
                                         <div className={cls.reversedDate}>
-                                            {differenceInMinutes(date, getTime(parseISO(`${el.createdAt}`))) >= 60
-                                                ? <h4>{`${differenceInMinutes(date, getTime(parseISO(`${el.createdAt}`)))
-                                                    - (differenceInHours(date, getTime(parseISO(`${el.createdAt}`))) * 60)} min`}</h4>
-                                                : differenceInMinutes(date, getTime(parseISO(`${el.createdAt}`))) < 1
-                                                    ? <h4>less than minute</h4>
-                                                    : <h4>{`${differenceInMinutes(date, getTime(parseISO(`${el.createdAt}`)))} min`}</h4>
-                                            }
-
-                                            {differenceInHours(date, getTime(parseISO(`${el.createdAt}`))) >= 24 &&
-                                                differenceInHours(date, getTime(parseISO(`${el.createdAt}`)))
-                                                - (differenceInDays(date, getTime(parseISO(`${el.createdAt}`))) * 24) > 0
-                                                ?
-                                                <h4>{`${differenceInHours(date, getTime(parseISO(`${el.createdAt}`)))
-                                                    - (differenceInDays(date, getTime(parseISO(`${el.createdAt}`))) * 24)} hours`}</h4>
-                                                : ''}
-                                            {differenceInHours(date, getTime(parseISO(`${el.createdAt}`))) < 24
-                                                && differenceInHours(date, getTime(parseISO(`${el.createdAt}`))) > 0
-                                                ? <h4> {`${differenceInHours(date, getTime(parseISO(`${el.createdAt}`)))} hours`} </h4>
-                                                : ''}
-
-                                            {differenceInDays(date, getTime(parseISO(`${el.createdAt}`))) > 0 ?
-                                                <h4>{`${differenceInDays(date, getTime(parseISO(`${el.createdAt}`)))} days `}</h4>
-                                                : ''
-                                            }
+                <h4>{timeCreator(el.createdAt) }</h4>
                                         </div>
                                         <h4>ago</h4>
                                     </div>
