@@ -166,8 +166,6 @@ export const likeArticle = (slug) => {
     return async (dispatch) => {
         try {
             const result = await instance.post(`api/articles/${slug}/favorite`)
-            console.log(result)
-
         } catch (error) {
             dispatch(setErrorAC(error.response.data.errors))
         }
@@ -178,8 +176,6 @@ export const unfavoriteArticle = (slug) => {
     return async (dispatch) => {
         try {
             const result = await instance.delete(`api/articles/${slug}/favorite`)
-            console.log(result)
-
         } catch (error) {
             dispatch(setErrorAC(error.response.data.errors))
         }

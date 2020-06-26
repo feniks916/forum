@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import { RegistrationThunk } from '../../Redux/mainPageReducer';
+import { RegistrationThunk,setErrorAC } from '../../Redux/userReducer';
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { Formik } from 'formik';
@@ -7,14 +7,12 @@ import { Input, Alert } from 'antd';
 import { useHistory } from "react-router-dom";
 import * as Yup from 'yup';
 import cls from './registration.module.scss';
-import { isAuth, getName } from '../../helpers/token';
-import { setErrorAC } from '../../Redux/mainPageReducer';
+import { getName } from '../../helpers/token';
 
 const RegistrationPage = props => {
-  const { status, error, RegistrationThunk, setErrorAC } = props;
-  console.log(error)
+  const { status, error, RegistrationThunk, setErrorAC, loggedIn } = props;
   let history = useHistory(); 
-  if(isAuth() && getName() !== null) {
+  if(loggedIn === true && getName() !== null) {
     history.push("/forum/articles");
 }
   if( status < 300 && status > 199) {
@@ -152,7 +150,8 @@ const RegistrationPage = props => {
 
 const mapStateToProps = (state) => ({
   error: state.userData.error,
-  status: state.userData.status
+  status: state.userData.status,
+  loggedIn: state.userData.loggedIn
 })
 
 const RegistrationPageContainer = connect(mapStateToProps, { RegistrationThunk, setErrorAC })(RegistrationPage)

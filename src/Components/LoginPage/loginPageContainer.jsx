@@ -1,18 +1,18 @@
 import { connect } from 'react-redux';
-import { thunk, setErrorAC } from '../../Redux/mainPageReducer';
+import { thunk, setErrorAC } from '../../Redux/userReducer';
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { Formik } from 'formik';
 import { Input, Alert } from 'antd';
 import { useHistory } from "react-router-dom";
 import cls from './login.module.scss';
-import { isAuth, getName } from '../../helpers/token';
+import { getName } from '../../helpers/token';
 
 const LoginPage = (props) => {
-    const { status, error, thunk, setErrorAC } = props;
+    const { status, error, thunk, setErrorAC, loggedIn } = props;
     let history = useHistory(); 
 
-    if(isAuth() && getName() !== null) {
+    if( loggedIn === true && getName() !== null) {
         history.push("/forum/articles");
     }
 
@@ -21,7 +21,7 @@ const LoginPage = (props) => {
     }
 
     if (status < 300 && status > 199) {
-        setTimeout(() => isAuth() && history.push("/forum/articles"), 10);
+        loggedIn === true && history.push("/forum/articles")
         return 'redirecting...'
         }
         const redirectToArticles = () => {
@@ -114,7 +114,8 @@ const LoginPage = (props) => {
 
 const mapStateToProps = (state) => ({
     error: state.userData.error,
-    status: state.userData.status
+    status: state.userData.status,
+    loggedIn : state.userData.loggedIn
 })
 
 const LoginPageContainer = connect(mapStateToProps, { thunk, setErrorAC })(LoginPage)

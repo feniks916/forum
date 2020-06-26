@@ -5,7 +5,7 @@ const instance = axios.create({
 });
 
 instance.interceptors.request.use(config => {
-  const token = sessionStorage.getItem('cool-jwt');
+  const token = localStorage.getItem('cool-jwt');
   if (token) {
     config.headers.Authorization = `Token ${token}`;
   }
@@ -18,7 +18,7 @@ export const register = registerData =>
 instance.post('/api/users', registerData)
 
 export const updateArticle = updatedData =>
-instance.put(`/api/articles/${sessionStorage.getItem('slug')}`, updatedData)
+instance.put(`/api/articles/${localStorage.getItem('slug')}`, updatedData)
 
 export const login = (loginData) => 
   instance.post('/api/users/login', loginData)

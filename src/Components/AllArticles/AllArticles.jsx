@@ -1,6 +1,5 @@
 import { connect } from 'react-redux';
 import React, { useEffect, useState } from 'react';
-import { NavLink } from 'react-router-dom';
 import { useHistory } from "react-router-dom";
 import instance from '../../API/API';
 import cls from './all.module.scss';
@@ -19,13 +18,13 @@ import {
     setErrorAC,
     setRecievedAC
 } from '../../Redux/Article';
-import {setStatusAC} from '../../Redux/mainPageReducer';
+import {setStatusAC} from '../../Redux/userReducer';
 import { getName, isAuth, removeJwt } from '../../helpers/token';
 import { HeartOutlined, HeartFilled, CloseCircleOutlined, SettingFilled } from '@ant-design/icons';
-import { parseISO, differenceInMinutes, getTime, differenceInHours, differenceInDays } from 'date-fns';
 import { timeCreator } from '../../helpers/timeCreator';
+import { onChangePageNumber } from '../../helpers/pagination';
 
-const ArticlesPage = (props) => {
+const AllArticles = (props) => {
     const history = useHistory();
     const username = getName();
     const { articles, 
@@ -49,7 +48,7 @@ const ArticlesPage = (props) => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const result = await instance.get(`/api/articles?offset=${pageNumber === 1 ? 0 : (pageNumber - 1) * (pageSize)}&limit=${pageSize}`)
+                const result = await instance.get(`/api/articles?offset=${onChangePageNumber(pageNumber,pageSize)}&limit=${pageSize}`)
                 setArticlesAC(result.data.articles, result.data.articlesCount, true, result.data.favorited)
                 seTpagesQuantity(Math.ceil(result.data.articlesCount / pageSize))
             } catch (error) {
@@ -68,7 +67,7 @@ const ArticlesPage = (props) => {
     };
     const getSlug = (slug) => {
         history.push("/forum/article");
-        sessionStorage.setItem('slug', slug);
+        localStorage.setItem('slug', slug);
         getSlugAC(slug)
     }
     const deleteArticle = (slug) => {
@@ -125,10 +124,11 @@ const ArticlesPage = (props) => {
       }
     return (
         <div className={cls.wrapper}>
-            {!isAuth() && <div className={cls.registered}> <button
+            {!isAuth() 
+            ? <div className={cls.registered}> <button
                 onClick={redirectToLogin}
-                className={cls.articles}> <h4>Login</h4></button> </div>}
-            {isAuth() && <div className={cls.registered}> <button
+                className={cls.articles}> <h4>Login</h4></button> </div>
+                : <div className={cls.registered}> <button
                 onClick={createArtice}> <h4>
                     Create Article</h4>
             </button>
@@ -246,6 +246,6 @@ const AllArticlesContainer = connect(mapStateToProps,
         setStatusAC,
         setErrorAC,
         setRecievedAC
-    })(ArticlesPage)
+    })(AllArticles)
 
 export default AllArticlesContainer;

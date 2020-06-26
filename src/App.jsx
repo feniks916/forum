@@ -1,27 +1,31 @@
 import React from 'react';
-import './App.module.scss';
+import { connect } from 'react-redux';
 import RegistrationPageContainer from './Components/RegistrationPage/RegistrationPageContainer';
 import LoginPageContainer from './Components/LoginPage/loginPageContainer';
-import mainPageContainer from './Components/MainPage/MainPageContainer'
-import AllArticlesContainer from './Components/ArticlesPAge/AllArticles'
+import AllArticlesContainer from './Components/AllArticles/AllArticles'
 import {Switch, Route} from 'react-router-dom';
 import { ProtectedRoute } from './helpers/protectedRoute';
-import SingleArticleContainer from './Components/CurrentArticlePage/CurrentArticle';
-import DevelopmentPageContainer from './Components/AddNewArticlePage/AddArticle';
-import EditPageContainer from './Components/EditingPage/EditingPage';
+import ArticleContainer from './Components/CurrentArticle/CurrentArticle';
+import EditArticleContainer from './Components/AddEditArticle/AddArticle';
 
-const App = () => {
+const Routes = (props) => {
   return (
     <Switch>
       <Route path='/forum/LoginPage' component={LoginPageContainer} />
       <Route path='/forum/articles' component={AllArticlesContainer} />
       <Route path='/forum/Registration' component={RegistrationPageContainer}/>
-      <Route path='/forum/developmentPage' component={DevelopmentPageContainer}/>
-      <Route path='/forum/article' component={SingleArticleContainer}/>
-      <Route path='/forum/editPage' component={EditPageContainer}/>
-      <ProtectedRoute exact path='/forum/' component={mainPageContainer} />
+      <Route path='/forum/developmentPage' component={EditArticleContainer}/>
+      <Route path='/forum/article' component={ArticleContainer}/>
+      <Route path='/forum/editPage' component={EditArticleContainer}/>
+      <ProtectedRoute exact path='/forum/' component={AllArticlesContainer} loggedIn={props.loggedIn} />
     </Switch>
   ) 
 };
+
+const mapStateToProps = (state) => ({
+  loggedIn: state.userData.loggedIn,
+})
+
+const App = connect(mapStateToProps)(Routes)
 
 export default App;

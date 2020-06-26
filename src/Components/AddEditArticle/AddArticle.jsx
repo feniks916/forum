@@ -1,15 +1,17 @@
 import { connect } from 'react-redux';
 import { createArticleThunk, setCreatedAC, setErrorAC, getCurrentArticleAC, setRecievedAC } from '../../Redux/Article';
-import React, { useState, useEffect, useRef } from 'react';
-import { Formik, FieldArray, Field } from 'formik';
-import { Input, Result, notification, Alert, Spin, } from 'antd';
+import React, { useEffect } from 'react';
+import { Formik } from 'formik';
+import { Input, Result, Alert, Spin, } from 'antd';
 import { useHistory } from "react-router-dom";
 import cls from './add.module.scss';
 import * as Yup from 'yup';
-import { CloseCircleOutlined } from '@ant-design/icons';
 import instance, { updateArticle } from '../../API/API';
 
-const DevelopmentPage = (props) => {
+import 'react-tagsinput/react-tagsinput.css'
+import EditableTagGroup from '../../helpers/tagsCreator';
+
+const EditArticle = (props) => {
     const {
         createArticleThunk,
         isCreated,
@@ -20,17 +22,14 @@ const DevelopmentPage = (props) => {
         getCurrentArticleAC,
         setRecievedAC } = props;
     const { body, description, title, tagList } = currentArticle;
-    const [tagsArray, setTagsArray] = useState([]);
 
     let history = useHistory();
-    let inputGift = useRef(null);
-    const sessionSlug = sessionStorage.getItem('slug');
+    const sessionSlug = localStorage.getItem('slug');
 
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const result = await instance.get(`/api/articles/${sessionSlug}`)
-                setTagsArray(result.data.article.tagList)
                 getCurrentArticleAC(result.data.article)
                 setRecievedAC(true)
             } catch (error) {
@@ -44,40 +43,8 @@ const DevelopmentPage = (props) => {
         }
     }, [body, isReceived])
 
-    const openNotification = () => {
-        notification.open({
-            message: 'Equal tags can not be added in one tags list',
-            description:
-                'Change or delete this tag and close this window',
-            onClick: () => {
-                console.log('Notification Clicked!');
-            },
-        });
-    };
-
-
     const resetErrors = () => {
         setErrorAC('')
-    }
-
-    const removeTag = (i) => {
-        const tags = tagsArray
-        const arr = tags.splice(i, 1)
-        setTagsArray(tagsArray.filter(el => el !== arr[0]));
-    }
-
-    const onKeyDown = (e) => {
-        const val = e.target.value;
-        if (e.key === 'Shift' && val) {
-            if (tagsArray.find(tag => tag.toLowerCase() === val.toLowerCase())) {
-                openNotification()
-                return;
-            }
-            setTagsArray(tagsArray.concat(val));
-            inputGift.current.value = '';
-        } else if (e.key === 'Backspace' && !val) {
-            removeTag(tagsArray.length - 1);
-        }
     }
 
     const redirectToArticles = () => {
@@ -103,25 +70,27 @@ const DevelopmentPage = (props) => {
                     ]}
                 />
             }
-
             {!isReceived && <Spin size="large" />}
 
             {!isCreated && isReceived &&
                 <Formik
 
                     initialValues={{
-                        title: title || "", description: description || "", body: body || "", tags: tagsArray,
-                        people: [{ id: "5", firstName: "bob", lastName: "bob2" }]
+                        title: title || "", description: description || "", body: body || "", tagList: tagList || [],
                     }}
                     onSubmit={async values => {
                         await new Promise(resolve => setTimeout(resolve, 500));
                         if (currentArticle.hasOwnProperty('body')) {
+                            const newValues = { ...values };
+                            if (values.tagList.length === 0) {
+                                newValues.tagList = [''];
+                            }
                             updateArticle({
                                 article: {
-                                    title: values.title,
-                                    description: values.description,
-                                    body: values.body,
-                                    tagList: tagsArray
+                                    title: newValues.title,
+                                    description: newValues.description,
+                                    body: newValues.body,
+                                    tagList: newValues.tagList
                                 }
                             })
                             setCreatedAC(true)
@@ -132,7 +101,7 @@ const DevelopmentPage = (props) => {
                                     title: values.title,
                                     description: values.description,
                                     body: values.body,
-                                    tagList: tagsArray
+                                    tagList: values.tagList
                                 }
                             })
                             setCreatedAC(true)
@@ -140,11 +109,11 @@ const DevelopmentPage = (props) => {
                     }}
                     validationSchema={Yup.object().shape({
                         title: Yup.string()
-                        .required('field shouldnt be empty'),
+                            .required('field shouldnt be empty'),
                         description: Yup.string()
-                        .required('field shouldnt be empty'),
+                            .required('field shouldnt be empty'),
                         body: Yup.string()
-                        .required('field shouldnt be empty'),
+                            .required('field shouldnt be empty'),
                     })}
                 >
                     {props => {
@@ -157,7 +126,8 @@ const DevelopmentPage = (props) => {
                             handleChange,
                             handleBlur,
                             handleSubmit,
-                            handleReset
+                            handleReset,
+                            setFieldValue
                         } = props;
                         return (
                             <div>
@@ -168,7 +138,7 @@ const DevelopmentPage = (props) => {
                                 <form onSubmit={handleSubmit} className={cls.form}>
                                     <label htmlFor="email" style={{ display: "block" }}>
                                         Title
-                                     </label>
+                                  </label>
                                     <Input
                                         id="title"
                                         placeholder="Enter title of article"
@@ -183,7 +153,7 @@ const DevelopmentPage = (props) => {
                                     )}
                                     <label htmlFor="email" style={{ display: "block" }}>
                                         Description
-                                        </label>
+                                     </label>
                                     <Input
                                         id="description"
                                         placeholder="Enter description of article"
@@ -198,7 +168,7 @@ const DevelopmentPage = (props) => {
                                     )}
                                     <label htmlFor="email" style={{ display: "block" }}>
                                         Body
-                                        </label>
+                                     </label>
                                     <Input.TextArea
                                         id="body"
                                         placeholder="Enter body of article"
@@ -211,25 +181,12 @@ const DevelopmentPage = (props) => {
                                     {errors.body && touched.body && (
                                         <div className={cls.errors}><Alert message={errors.body} type="error" showIcon /></div>
                                     )}
-                                   
-                                    <label htmlFor="email" style={{ display: "block" }}>
-                                        Tags
-                                        </label>
-                                    <div className={cls.tagsArea}>
-                                        <ul className={cls.tagsUl}>
-                                            {tagsArray.map((tag, i) => (
-                                                <li key={tag}>
-                                                    <h4>
-                                                        {tag}
-                                                        <button type="button" onClick={() => { removeTag(i) }}><CloseCircleOutlined /></button>
-                                                    </h4>
-                                                </li>
-                                            ))}
-                                            <li className={cls.tagsInput}>
-                                                <input type="text" placeholder="Press shift for adding tag" onKeyDown={onKeyDown} ref={inputGift} />
-                                            </li>
-                                        </ul>
-                                    </div>
+                                    <EditableTagGroup
+                                        tagList={values.tagList}
+                                        updateTagList={(tags) => {
+                                            setFieldValue('tagList', tags);
+                                        }}
+                                    />
                                     <div className={cls.buttonsArea}>
                                         <div>
                                             <button
@@ -242,12 +199,12 @@ const DevelopmentPage = (props) => {
                                                 disabled={!dirty || isSubmitting}
                                             >
                                                 Reset
-                                            </button>
+                                         </button>
                                             <button
                                                 type="submit" disabled={isSubmitting}
                                             >
                                                 Submit
-                                            </button>
+                                         </button>
                                         </div>
                                     </div>
                                 </form>
@@ -267,13 +224,13 @@ const mapStateToProps = (state) => ({
     isReceived: state.articlesData.isReceived
 })
 
-const DevelopmentPageContainer = connect(mapStateToProps,
+const EditArticleContainer = connect(mapStateToProps,
     {
         createArticleThunk,
         setCreatedAC,
         setErrorAC,
         getCurrentArticleAC,
         setRecievedAC
-    })(DevelopmentPage)
+    })(EditArticle)
 
-export default DevelopmentPageContainer;
+export default EditArticleContainer;

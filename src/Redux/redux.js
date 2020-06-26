@@ -1,10 +1,10 @@
 import {applyMiddleware, combineReducers, createStore} from "redux";
-import mainPageReducer from './mainPageReducer';
+import userReducer from './userReducer';
 import articleReducer from './Article'
 import thunkMiddleware from "redux-thunk";
 
 let reducers = combineReducers({
-    userData: mainPageReducer,
+    userData: userReducer,
     articlesData: articleReducer,
 })
 

@@ -1,8 +1,7 @@
 import { connect } from 'react-redux';
-import { thunk } from '../../Redux/mainPageReducer';
 import { HeartOutlined, HeartFilled } from '@ant-design/icons';
+import { Spin } from 'antd';
 import React, { useEffect } from 'react';
-import { NavLink } from 'react-router-dom';
 import { useHistory } from "react-router-dom";
 import cls from './current.module.scss';
 import instance from '../../API/API';
@@ -14,18 +13,16 @@ import {
     getCurrentArticleAC,
 } from '../../Redux/Article';
 import { getSlug, isAuth } from '../../helpers/token';
-
-import { parseISO, differenceInMinutes, getTime, differenceInHours, differenceInDays } from 'date-fns';
 import { timeCreator } from '../../helpers/timeCreator';
 
 
 
-const SingleArticlePage = (props) => {
+const Article = (props) => {
     const { setFavoriteCurrentAC, setUnfavoriteCurrentAC, likeArticle, unfavoriteArticle, article } = props;
     const { body, author, createdAt, description, favoritesCount, favorited, title, tagList, updatedAt } = article;
     const date = Date.now();
     let history = useHistory();
-    const sessionSlug = sessionStorage.getItem('slug')
+    const sessionSlug = localStorage.getItem('slug')
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -53,15 +50,19 @@ const SingleArticlePage = (props) => {
     }
     const redirectToArticles = () => {
         history.push("/forum/articles");
+        localStorage.setItem('slug', '');
+        props.getCurrentArticleAC({})
     }
 
-    return (article.hasOwnProperty('body') &&
+    return (
         <div className={cls.wrapper}>
              <button 
              className={cls.redirect}
             onClick={redirectToArticles}
             type="primary" key="console">Atricles</button>
-            <div className={cls.body}>
+            
+            {article.hasOwnProperty('body') 
+            ? <div className={cls.body}>
                 <img src='https://cdn.jevelin.shufflehound.com/wp-content/uploads/sites/28/2019/09/101_0001_alexandru-acea-bbokzTQjB9o-unsplash-1024x777.jpg' alt="pic" />
                 <div className={cls.dateValue}>
                 <p>{`created by ${author.username}`}</p>
@@ -97,6 +98,7 @@ const SingleArticlePage = (props) => {
                     ><h5><HeartOutlined /></h5><h5>{article.favoritesCount}</h5></button>}</div>}
                  {!isAuth() && <h5>{`likes: ${article.favoritesCount}`}</h5> }   
             </div>
+            : <div><Spin /></div>}
         </div>
     )
 }
@@ -105,12 +107,12 @@ const mapStateToProps = (state) => ({
     article: state.articlesData.currentArticle,
 })
 
-const SingleArticleContainer = connect(mapStateToProps, {
+const ArticleContainer = connect(mapStateToProps, {
     unfavoriteArticle,
     likeArticle,
     setFavoriteCurrentAC,
     setUnfavoriteCurrentAC,
     getCurrentArticleAC
-})(SingleArticlePage)
+})(Article)
 
-export default SingleArticleContainer;
+export default ArticleContainer;

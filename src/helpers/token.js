@@ -1,9 +1,9 @@
 export const getJwt = () => {
-    return sessionStorage.getItem('cool-jwt');
+    return localStorage.getItem('cool-jwt');
   };
 
   export const getName = () => {
-    return sessionStorage.getItem('cool-name');
+    return localStorage.getItem('cool-name');
   }
 
   export const isAuth = (value = false) => {
@@ -11,12 +11,12 @@ export const getJwt = () => {
   };
 
   export const removeJwt = () => {
-      return sessionStorage.removeItem('cool-jwt');
+      return localStorage.removeItem('cool-jwt');
   }
 
 
   export const getSlug = () => {
-    return sessionStorage.getItem('slug');
+    return localStorage.getItem('slug');
   }
 
 

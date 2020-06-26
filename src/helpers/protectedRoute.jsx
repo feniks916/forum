@@ -3,14 +3,15 @@ import { Route, Redirect } from "react-router-dom";
 import { isAuth } from "./token";
 
 export const ProtectedRoute = ({
-  component: Component,
+  component: Component, loggedIn,
   ...rest
 }) => {
   return (
     <Route
       {...rest}
       render={props => {
-        if (isAuth()) {
+        console.log(props)
+        if (loggedIn === true) {
             return <Component {...props} />;
         } else {
           return (
