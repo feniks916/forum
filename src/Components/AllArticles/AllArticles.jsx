@@ -18,7 +18,7 @@ import {
     setErrorAC,
     setRecievedAC
 } from '../../Redux/Article';
-import {setStatusAC} from '../../Redux/userReducer';
+import {setStatusAC, setLoggedin} from '../../Redux/userReducer';
 import { getName, isAuth, removeJwt } from '../../helpers/token';
 import { HeartOutlined, HeartFilled, CloseCircleOutlined, SettingFilled } from '@ant-design/icons';
 import { timeCreator } from '../../helpers/timeCreator';
@@ -39,6 +39,7 @@ const AllArticles = (props) => {
         setErrorAC,
         getArticle,
         setRecievedAC,
+        setLoggedin
     } = props
     const date = Date.now()
 
@@ -114,7 +115,9 @@ const AllArticles = (props) => {
         setRecievedAC(true)
     }
     const redirectToLogin = () => {
+        props.setStatusAC({data: 401});
         history.push("/forum/LoginPage");
+        setLoggedin(false)
     }
     const deleteToken = () => {
         removeJwt('cool-jwt')
@@ -245,7 +248,8 @@ const AllArticlesContainer = connect(mapStateToProps,
         setUnfavoriteAC,
         setStatusAC,
         setErrorAC,
-        setRecievedAC
+        setRecievedAC,
+        setLoggedin
     })(AllArticles)
 
 export default AllArticlesContainer;
